@@ -18,7 +18,8 @@ python launch/2026-09-redesign/render.py
 python launch/2026-09-redesign/verify.py
 ```
 
-CI checks caption and screen bounds and overlap at all 1,080 animation frames.
+CI audits the pinned film dependencies for known vulnerabilities and checks
+caption and screen bounds and overlap at all 1,080 animation frames.
 Regression probes recreate the caption collision and reject opaque scene artwork.
 The export receipt records the renderer, input assets, and video digests; CI rejects
 a changed input or video until a new export is rendered and reviewed.

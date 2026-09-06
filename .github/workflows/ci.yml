@@ -18,6 +18,10 @@ jobs:
           python-version: "3.13"
       - name: Install film dependencies
         run: python -m pip install -r launch/2026-09-redesign/requirements.txt
+      - name: Audit film dependencies
+        run: |
+          python -m pip install pip-audit==2.10.1
+          python -m pip_audit --strict -r launch/2026-09-redesign/requirements.txt
       - name: Verify every animation frame and regression probes
         run: python launch/2026-09-redesign/verify.py
       - name: Preserve film evidence
