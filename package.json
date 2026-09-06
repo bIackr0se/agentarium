@@ -1,0 +1,67 @@
+{
+  "name": "agentarium-map",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A localhost-only, read-only visual map for provider-neutral agent work.",
+  "bin": {
+    "agentarium": "./bin/agentarium.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "server",
+    "src/lib/demo-fixture.mjs",
+    "docs/provider-matrix.md",
+    "docs/world-snapshot.example.json",
+    "docs/world-snapshot.schema.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bIackr0se/agentarium.git"
+  },
+  "homepage": "https://github.com/bIackr0se/agentarium#readme",
+  "bugs": {
+    "url": "https://github.com/bIackr0se/agentarium/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "npm@11.19.0",
+  "type": "module",
+  "scripts": {
+    "agentarium": "node bin/agentarium.mjs",
+    "prepare": "npm run build",
+    "dev": "vite --host 127.0.0.1 --port 4173",
+    "build": "tsc -b && vite build",
+    "start": "node server/index.mjs",
+    "test": "node --test tests/*.test.mjs && vitest run",
+    "test:node": "node --test tests/*.test.mjs",
+    "test:ui": "vitest run",
+    "validate:snapshot": "node server/validate-snapshot.mjs",
+    "lint": "tsc -b --pretty false",
+    "test:install": "node tests/package-install.e2e.mjs",
+    "test:browser": "playwright test",
+    "verify": "npm run lint && npm test && npm run build && npm run test:install && npm run test:browser"
+  },
+  "dependencies": {
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.6",
+    "@types/node": "26.4.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "6.1.1",
+    "jsdom": "30.0.1",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  }
+}

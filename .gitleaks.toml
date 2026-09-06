@@ -1,0 +1,11 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Deterministic fake credentials used by privacy-boundary tests"
+targetRules = ["generic-api-key", "stripe-access-token"]
+regexTarget = "line"
+regexes = [
+  '''api[_-]?key\s*=\s*sk[-_]live[-_]12345678901234567890''',
+  '''sk[-_]live[-_]12345678901234567890''',
+]

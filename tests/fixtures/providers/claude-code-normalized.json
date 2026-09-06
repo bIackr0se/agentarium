@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "mode": "live",
+  "generatedAt": "2026-08-30T12:00:00.000Z",
+  "sourceFreshness": "2026-08-30T12:00:00.000Z",
+  "sourceLabel": "Claude Code normalized fixture",
+  "projects": [
+    {
+      "id": "project-claude-docs",
+      "name": "Release notes",
+      "color": "#7EE7D1",
+      "agentIds": ["claude-root", "claude-review"],
+      "activeCount": 1,
+      "attentionCount": 1
+    }
+  ],
+  "agents": [
+    {
+      "id": "claude-root",
+      "title": "Publish release notes",
+      "nickname": "Scribe",
+      "role": "lead",
+      "projectId": "project-claude-docs",
+      "projectName": "Release notes",
+      "state": "editing",
+      "evidence": "observed",
+      "lastSeen": "2026-08-30T12:00:00.000Z",
+      "ageMs": 0,
+      "currentAction": "Editing the release draft",
+      "model": "claude-sonnet",
+      "reasoningEffort": "high",
+      "tokenUsage": 4200,
+      "branch": "release-notes",
+      "childCount": 1,
+      "events": [
+        {
+          "id": "claude-event-root",
+          "agentId": "claude-root",
+          "timestamp": "2026-08-30T12:00:00.000Z",
+          "kind": "file",
+          "label": "Release draft updated",
+          "state": "editing",
+          "source": "claude-code-export",
+          "evidence": "observed",
+          "status": "inProgress"
+        }
+      ]
+    },
+    {
+      "id": "claude-review",
+      "title": "Check release links",
+      "nickname": "Proof",
+      "role": "reviewer",
+      "assignment": "Link review",
+      "projectId": "project-claude-docs",
+      "projectName": "Release notes",
+      "state": "waiting",
+      "evidence": "observed",
+      "lastSeen": "2026-08-30T11:59:00.000Z",
+      "ageMs": 60000,
+      "currentAction": "Waiting for the draft",
+      "parentAgentId": "claude-root",
+      "childCount": 0,
+      "attentionReason": "Waiting on the release draft",
+      "events": [
+        {
+          "id": "claude-event-review",
+          "agentId": "claude-review",
+          "timestamp": "2026-08-30T11:59:00.000Z",
+          "kind": "verification",
+          "label": "Link review queued",
+          "state": "waiting",
+          "source": "claude-code-export",
+          "evidence": "observed",
+          "status": "inProgress"
+        }
+      ]
+    }
+  ],
+  "attention": ["claude-review"],
+  "privacy": {
+    "rawContentExposed": false,
+    "redactionsApplied": 0
+  },
+  "warnings": []
+}
