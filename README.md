@@ -5,6 +5,18 @@ their current agent states are visible at overview, and each root task opens
 into a larger village with a home, work spot, state, and bounded evidence trail
 for every agent.
 
+## Try it locally
+
+With **Node.js 24+** and **Git** installed, paste this into your terminal:
+
+```bash
+git clone https://github.com/bIackr0se/agentarium.git && cd agentarium && npm ci && npm run agentarium -- --provider demo
+```
+
+This installs, builds, and opens the fictional Demo on your own computer.
+It does not read your agent history. Stop it with `Ctrl-C`.
+Already cloned it? See [Run locally](#run-locally), including how to connect a live source.
+
 ![Agentarium connected world with synthetic Demo projects](docs/agentarium-demo.png)
 
 [Watch the 36-second demo film](launch/2026-09-redesign/agentarium-launch.mp4).
