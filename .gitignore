@@ -26,3 +26,17 @@ launch/*/*
 !launch/2026-09-redesign/agentarium-launch.mp4
 !launch/2026-09-redesign/FONT-LICENSE.txt
 !launch/2026-09-redesign/README.md
+!launch/2026-09-redesign/render.py
+!launch/2026-09-redesign/verify.py
+!launch/2026-09-redesign/export.json
+!launch/2026-09-redesign/requirements.txt
+!launch/2026-09-redesign/SpaceGrotesk-Medium.ttf
+!launch/2026-09-redesign/robot-film.webp
+!launch/2026-09-redesign/captures/
+launch/2026-09-redesign/captures/*
+!launch/2026-09-redesign/captures/desktop.png
+!launch/2026-09-redesign/captures/project.png
+!launch/2026-09-redesign/captures/evidence.png
+!launch/2026-09-redesign/captures/replay.png
+!launch/2026-09-redesign/captures/replay-earlier.png
+!launch/2026-09-redesign/captures/connect.png
