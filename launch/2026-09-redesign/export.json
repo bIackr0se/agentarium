@@ -1,7 +1,7 @@
 {
   "inputs": {
     "launch/2026-09-redesign/SpaceGrotesk-Medium.ttf": "6f62490780ab5ec012ec7de71446fbb0d37c2c53ec4df9f94c49c9187336ea23",
-    "launch/2026-09-redesign/captures/connect.png": "e7891a7b0d86ff53e4c9f0217ba16803cbd35bb5b1d47ad3406a3cc05c646544",
+    "launch/2026-09-redesign/captures/connect.png": "f36a091fbfcbef485c6fa7e90f3fcd44698c4a982d66ebc1e3168632d6e72ba7",
     "launch/2026-09-redesign/captures/desktop.png": "e2d8b2a42af803ce615e6885b6fbcfa70a9cbac1caa167f6be88d90b1ea443ac",
     "launch/2026-09-redesign/captures/evidence.png": "3d5d13425ca105c82177d218acb93cdad03ef5965a2bdf5ded3b55a26074cd1d",
     "launch/2026-09-redesign/captures/project.png": "80f68e1b8b59d0c9714834fb72bb845882c6a2159173897c80b0e51a39e31b7f",
@@ -12,5 +12,5 @@
     "launch/2026-09-redesign/robot-film.webp": "d34e4430bfbc0d5a0cc13ffc99685d634de76dbe98da8740f768d0c36c4e300a",
     "public/assets/sculpted/village.webp": "cf679972dc12baf2fc4dc6e7362529c15704c62e9328b7b4a2634484980184d9"
   },
-  "video_sha256": "ff31e001f3f57a83cb41424491aa83fac28dcf2e97b61e9438083696478b59f5"
+  "video_sha256": "4280876922546da8ffd23000158742a1ecbd1bd1d572d875297061c24e40a042"
 }

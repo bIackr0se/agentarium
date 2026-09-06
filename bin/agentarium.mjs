@@ -24,12 +24,12 @@ Options:
   --no-open                           Do not open a browser automatically
   --help                              Show this help
 
-From an Agentarium checkout after npm ci:
-  npm run agentarium -- --provider demo
-  npm run agentarium -- --provider codex
-  npm run agentarium -- --provider json --snapshot ./world.json
-  npm run agentarium -- --provider jsonl --snapshot ./world.jsonl --port 4174 --no-open
-  npm run agentarium -- --validate ./world.json`;
+Run without cloning or building (Node.js 24+):
+  npx --yes agentarium-map@latest --provider demo
+  npx --yes agentarium-map@latest --provider codex
+  npx --yes agentarium-map@latest --provider json --snapshot ./world.json
+  npx --yes agentarium-map@latest --provider jsonl --snapshot ./world.jsonl --port 4174 --no-open
+  npx --yes agentarium-map@latest --validate ./world.json`;
 
 const FILE_PROVIDERS = new Set(["json", "jsonl"]);
 

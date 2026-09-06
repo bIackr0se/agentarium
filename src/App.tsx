@@ -602,7 +602,7 @@ export function App({ initialSnapshot }: AppProps) {
           eyebrow: "LIVE SOURCE SETUP",
           title: "Connect a source",
           description: "Connect a local source to see your projects, tasks, and agents.",
-          detail: "Stop the current dev server if needed, restart it with one adapter below, return here, then select Live.",
+          detail: "Stop the current Agentarium server if needed, restart it with one adapter below, return here, then select Live.",
           sourceSummary: "Source not configured",
           connectionOptions: SOURCE_CONNECTION_OPTIONS,
           connectionNote: `Contract: docs/world-snapshot.schema.json · ${SOURCE_CONTRACT_NOTE}`,

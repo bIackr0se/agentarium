@@ -13,13 +13,13 @@ describe("SourceSetup", () => {
     expect(screen.getByRole("heading", { name: "Codex" })).toBeInTheDocument();
     expect(screen.getByText("Any harness · JSON")).toBeInTheDocument();
     expect(screen.getByText("Any harness · JSONL")).toBeInTheDocument();
-    expect(screen.getByText("npm run agentarium -- --provider codex")).toBeInTheDocument();
-    expect(screen.getByText(/npm run agentarium -- --provider jsonl/)).toBeInTheDocument();
-    expect(screen.getByText("npm run agentarium -- --validate /absolute/path/world.json")).toBeInTheDocument();
-    expect(screen.getByText("npm run agentarium -- --validate /absolute/path/world.jsonl")).toBeInTheDocument();
+    expect(screen.getByText("npx --yes agentarium-map@latest --provider codex")).toBeInTheDocument();
+    expect(screen.getByText(/npx --yes agentarium-map@latest --provider jsonl/)).toBeInTheDocument();
+    expect(screen.getByText("npx --yes agentarium-map@latest --validate /absolute/path/world.json")).toBeInTheDocument();
+    expect(screen.getByText("npx --yes agentarium-map@latest --validate /absolute/path/world.jsonl")).toBeInTheDocument();
     expect(screen.getByText("docs/world-snapshot.schema.json")).toBeInTheDocument();
     expect(screen.getByText(/never sends prompts, commands, approvals, or payloads to a harness/i)).toBeInTheDocument();
-    expect(screen.getByText(/then run an adapter command/i)).toBeInTheDocument();
+    expect(screen.getByText(/run an adapter command in your terminal/i)).toBeInTheDocument();
     expect(screen.getAllByText(/replace the example path with the file your bridge writes/i)).toHaveLength(2);
     expect(screen.getByText(/requires Node\.js 24 or newer/i)).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Copy command" })).toHaveLength(3);
@@ -34,7 +34,7 @@ describe("SourceSetup", () => {
     render(<SourceSetup onClose={onClose} />);
 
     await user.click(screen.getAllByRole("button", { name: "Copy command" })[0]!);
-    expect(writeText).toHaveBeenCalledWith("npm run agentarium -- --provider codex");
+    expect(writeText).toHaveBeenCalledWith("npx --yes agentarium-map@latest --provider codex");
     expect(screen.getByRole("button", { name: "Copied" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Close connection guide" }));

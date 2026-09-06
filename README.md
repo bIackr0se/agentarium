@@ -7,15 +7,15 @@ for every agent.
 
 ## Try it locally
 
-With **Node.js 24+** and **Git** installed, paste this into your terminal:
+With **Node.js 24+** installed, paste this into your terminal:
 
 ```bash
-git clone https://github.com/bIackr0se/agentarium.git && cd agentarium && npm ci && npm run agentarium -- --provider demo
+npx --yes agentarium-map@latest
 ```
 
-This installs, builds, and opens the fictional Demo on your own computer.
-It does not read your agent history. Stop it with `Ctrl-C`.
-Already cloned it? See [Run locally](#run-locally), including how to connect a live source.
+This downloads the prebuilt app and opens a fictional Demo on your computer.
+No Git, cloning, or local build is needed. It does not read your agent history.
+Stop it with `Ctrl-C`. See [Run locally](#run-locally) to connect a live source.
 
 ![Agentarium connected world with synthetic Demo projects](docs/agentarium-demo.png)
 
@@ -155,12 +155,10 @@ recoveries, and regressions are covered in
 
 ## Run locally
 
-Agentarium requires Node.js 24 or newer. The npm package is not published yet.
-From this repository checkout, install and build once, then open the demo:
+Agentarium requires Node.js 24 or newer. Start the prebuilt npm package:
 
 ```bash
-npm ci
-npm run agentarium -- --provider demo
+npx --yes agentarium-map@latest
 ```
 
 The launcher starts the server on `127.0.0.1` and opens the local app.
@@ -180,7 +178,7 @@ The included Codex adapter reads the tested local SQLite state and does not
 write to it:
 
 ```bash
-npm run agentarium -- --provider codex
+npx --yes agentarium-map@latest --provider codex
 ```
 
 When the browser opens, choose **Live**. The source label and agent count
@@ -198,13 +196,13 @@ append-oriented JSONL file. Validate the file, start the matching provider, and
 then choose **Live**:
 
 ```bash
-npm run agentarium -- --validate /path/to/world.json
-npm run agentarium -- --provider json --snapshot /path/to/world.json
+npx --yes agentarium-map@latest --validate /path/to/world.json
+npx --yes agentarium-map@latest --provider json --snapshot /path/to/world.json
 ```
 
 ```bash
-npm run agentarium -- --validate /path/to/world.jsonl
-npm run agentarium -- --provider jsonl --snapshot /path/to/world.jsonl
+npx --yes agentarium-map@latest --validate /path/to/world.jsonl
+npx --yes agentarium-map@latest --provider jsonl --snapshot /path/to/world.jsonl
 ```
 
 The bridge requirement, versioned fields, and tested examples are in the
@@ -220,7 +218,11 @@ harnesses need a bridge that emits the documented shape.
 
 ### Run from a source checkout
 
+For development, clone and build the source:
+
 ```bash
+git clone https://github.com/bIackr0se/agentarium.git
+cd agentarium
 npm ci
 npm run agentarium -- --provider demo
 ```
@@ -244,8 +246,8 @@ Validate a producer file using the same bounded server projection used at the
 API boundary:
 
 ```bash
-npm run agentarium -- --validate /path/to/world.json
-npm run agentarium -- --validate /path/to/world.jsonl
+npx --yes agentarium-map@latest --validate /path/to/world.json
+npx --yes agentarium-map@latest --validate /path/to/world.jsonl
 ```
 
 From a source checkout, the equivalent command is

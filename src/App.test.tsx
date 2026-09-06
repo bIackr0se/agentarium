@@ -181,7 +181,7 @@ describe("Agentarium shell", () => {
     expect(screen.getByRole("heading", { name: "Codex" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Any harness · JSON" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Any harness · JSONL" })).toBeInTheDocument();
-    expect(screen.getByText("npm run agentarium -- --provider codex")).toBeInTheDocument();
+    expect(screen.getByText("npx --yes agentarium-map@latest --provider codex")).toBeInTheDocument();
     expect(screen.getByText(/never sends prompts, commands, approvals, or payloads/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Close connection guide" }));
@@ -1102,11 +1102,11 @@ describe("Agentarium shell", () => {
     const emptyScene = screen.getByRole("region", { name: "Connect a source" });
     expect(emptyScene).toHaveTextContent("Connect a local source to see your projects, tasks, and agents");
     expect(emptyScene).toHaveTextContent("restart it with one adapter below, return here, then select Live");
-    expect(emptyScene).toHaveTextContent("npm run agentarium -- --provider codex");
-    expect(emptyScene).toHaveTextContent("npm run agentarium -- --provider json --snapshot /absolute/path/world.json");
-    expect(emptyScene).toHaveTextContent("npm run agentarium -- --provider jsonl --snapshot /absolute/path/world.jsonl");
+    expect(emptyScene).toHaveTextContent("npx --yes agentarium-map@latest --provider codex");
+    expect(emptyScene).toHaveTextContent("npx --yes agentarium-map@latest --provider json --snapshot /absolute/path/world.json");
+    expect(emptyScene).toHaveTextContent("npx --yes agentarium-map@latest --provider jsonl --snapshot /absolute/path/world.jsonl");
     expect(emptyScene).toHaveTextContent("docs/world-snapshot.schema.json");
-    expect(emptyScene).toHaveTextContent("npm run agentarium -- --validate /absolute/path/world.jsonl");
+    expect(emptyScene).toHaveTextContent("npx --yes agentarium-map@latest --validate /absolute/path/world.jsonl");
     expect(screen.getByText("Snapshot source was not configured.")).toBeInTheDocument();
     expect(screen.getByText("Live source not connected")).toBeInTheDocument();
     expect(screen.getByText("Prompts and payloads are never displayed")).toBeInTheDocument();

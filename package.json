@@ -1,7 +1,6 @@
 {
   "name": "agentarium-map",
   "version": "0.1.0",
-  "private": true,
   "description": "A localhost-only, read-only visual map for provider-neutral agent work.",
   "bin": {
     "agentarium": "./bin/agentarium.mjs"
@@ -13,7 +12,8 @@
     "src/lib/demo-fixture.mjs",
     "docs/provider-matrix.md",
     "docs/world-snapshot.example.json",
-    "docs/world-snapshot.schema.json"
+    "docs/world-snapshot.schema.json",
+    "docs/licenses"
   ],
   "repository": {
     "type": "git",
@@ -44,12 +44,10 @@
     "test:browser": "playwright test",
     "verify": "npm run lint && npm test && npm run build && npm run test:install && npm run test:browser"
   },
-  "dependencies": {
+  "devDependencies": {
     "@fontsource-variable/space-grotesk": "^5.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "devDependencies": {
+    "react-dom": "19.2.8",
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.63.0",
     "@testing-library/jest-dom": "7.0.1",
@@ -63,5 +61,9 @@
     "typescript": "7.0.2",
     "vite": "8.2.2",
     "vitest": "4.1.11"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
