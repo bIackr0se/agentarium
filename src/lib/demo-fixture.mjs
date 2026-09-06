@@ -1,0 +1,312 @@
+const WORKING_STATES = new Set(["thinking", "reading", "editing", "running", "delegating", "verifying"]);
+const WAITING_STATES = new Set(["waiting", "needs-you"]);
+function isQueuedAgent(agent) {
+    if (WAITING_STATES.has(agent.state))
+        return true;
+    return agent.state === "failed" && !agent.parentAgentId;
+}
+function minutesBefore(base, minutes) {
+    return new Date(base.getTime() - minutes * 60_000).toISOString();
+}
+function demoEvent(id, agentId, timestamp, kind, label, state, evidence, durationMs, status) {
+    const event = { id, agentId, timestamp, kind, label, state, source: "demo", evidence };
+    if (durationMs !== undefined)
+        event.durationMs = durationMs;
+    if (status !== undefined)
+        event.status = status;
+    return event;
+}
+function demoAgent(base, input) {
+    const { ageMinutes, ...agent } = input;
+    return { ...agent, lastSeen: minutesBefore(base, ageMinutes), ageMs: ageMinutes * 60_000 };
+}
+function projectSnapshot(id, name, color, agents) {
+    const projectAgents = agents.filter((agent) => agent.projectId === id);
+    return {
+        id,
+        name,
+        color,
+        agentIds: projectAgents.map((agent) => agent.id),
+        activeCount: projectAgents.filter((agent) => WORKING_STATES.has(agent.state)).length,
+        attentionCount: projectAgents.filter(isQueuedAgent).length,
+    };
+}
+/** A safe, synthetic scene used whenever the configured live source is unavailable. */
+export function createDemoSnapshot(now = new Date()) {
+    const base = new Date(now);
+    const agents = [
+        demoAgent(base, {
+            id: "release-verifier",
+            title: "Verify release candidate",
+            projectId: "release-readiness",
+            projectName: "Release Readiness",
+            role: "lead verifier",
+            state: "verifying",
+            evidence: "observed",
+            ageMinutes: 2,
+            currentAction: "Checking the release candidate",
+            model: "agent-core",
+            reasoningEffort: "high",
+            tokenUsage: 184_200,
+            branch: "release/verification",
+            childCount: 3,
+            events: [
+                demoEvent("release-verifier-1", "release-verifier", minutesBefore(base, 26), "turn", "Release check started", "thinking", "observed", undefined, "inProgress"),
+                demoEvent("release-verifier-recovery", "release-verifier", minutesBefore(base, 19), "command", "Release probe failed", "failed", "observed", 32_000, "failed"),
+                demoEvent("release-verifier-2", "release-verifier", minutesBefore(base, 16), "command", "Verification suite running", "running", "observed", 420_000, "inProgress"),
+                demoEvent("release-verifier-3", "release-verifier", minutesBefore(base, 2), "verification", "Release result under review", "verifying", "observed", 84_000, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "product-draft",
+            title: "Draft product update",
+            projectId: "product-update",
+            projectName: "Product Update",
+            role: "writer",
+            state: "editing",
+            evidence: "observed",
+            ageMinutes: 4,
+            currentAction: "Editing the product update",
+            model: "agent-core",
+            reasoningEffort: "high",
+            tokenUsage: 96_400,
+            branch: "product/update-draft",
+            childCount: 1,
+            events: [
+                demoEvent("product-draft-1", "product-draft", minutesBefore(base, 31), "file", "Product brief opened", "reading", "observed", 8_000, "completed"),
+                demoEvent("product-draft-2", "product-draft", minutesBefore(base, 12), "file", "Update section edited", "editing", "observed", 54_000, "completed"),
+                demoEvent("product-draft-3", "product-draft", minutesBefore(base, 4), "turn", "Product update in progress", "editing", "derived", undefined, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "field-coordinator",
+            title: "Coordinate field research",
+            projectId: "field-research",
+            projectName: "Field Research",
+            role: "coordinator",
+            state: "delegating",
+            evidence: "derived",
+            ageMinutes: 6,
+            currentAction: "Coordinating the research team",
+            model: "agent-bridge",
+            reasoningEffort: "high",
+            tokenUsage: 211_700,
+            branch: "research/field-notes",
+            childCount: 1,
+            events: [
+                demoEvent("field-coordinator-1", "field-coordinator", minutesBefore(base, 42), "collaboration", "Research assistant linked", "delegating", "observed", undefined, "completed"),
+                demoEvent("field-coordinator-2", "field-coordinator", minutesBefore(base, 21), "message", "Field notes requested", "waiting", "derived", undefined, "inProgress"),
+                demoEvent("field-coordinator-3", "field-coordinator", minutesBefore(base, 6), "collaboration", "Research team active", "delegating", "derived", undefined, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "product-interface-review",
+            title: "Approve interface direction",
+            projectId: "product-update",
+            projectName: "Product Update",
+            role: "decision owner",
+            state: "needs-you",
+            evidence: "observed",
+            ageMinutes: 18,
+            currentAction: "Waiting for an interface decision",
+            model: "agent-core",
+            reasoningEffort: "high",
+            tokenUsage: 71_200,
+            branch: "product/interface-review",
+            childCount: 1,
+            attentionReason: "Choose an interface direction to continue",
+            events: [
+                demoEvent("signal-review-1", "product-interface-review", minutesBefore(base, 34), "turn", "Interface review started", "thinking", "observed", undefined, "completed"),
+                demoEvent("signal-review-2", "product-interface-review", minutesBefore(base, 18), "approval", "Interface decision requested", "needs-you", "observed", undefined, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "release-probe",
+            title: "Run reachability probe",
+            projectId: "release-readiness",
+            projectName: "Release Readiness",
+            role: "probe runner",
+            state: "complete",
+            evidence: "observed",
+            ageMinutes: 24,
+            currentAction: "Completed the synthetic reachability probe",
+            model: "agent-scout",
+            reasoningEffort: "high",
+            tokenUsage: 48_600,
+            branch: "release/reachability-probe",
+            parentAgentId: "release-verifier",
+            childCount: 0,
+            events: [
+                demoEvent("release-probe-1", "release-probe", minutesBefore(base, 51), "command", "Synthetic probe launched", "running", "observed", 210_000, "completed"),
+                demoEvent("release-probe-2", "release-probe", minutesBefore(base, 24), "verification", "Probe completed", "complete", "observed", 13_000, "completed"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "source-scout",
+            title: "Review current sources",
+            projectId: "source-review",
+            projectName: "Source Review",
+            role: "researcher",
+            state: "complete",
+            evidence: "observed",
+            ageMinutes: 9,
+            currentAction: "Completed the current source review",
+            model: "agent-scout",
+            reasoningEffort: "high",
+            tokenUsage: 63_100,
+            branch: "research/source-review",
+            childCount: 1,
+            events: [
+                demoEvent("frontier-scout-1", "source-scout", minutesBefore(base, 39), "tool", "Source lookup started", "reading", "observed", 103_000, "completed"),
+                demoEvent("frontier-scout-2", "source-scout", minutesBefore(base, 14), "verification", "Source map verified", "verifying", "observed", 21_000, "completed"),
+                demoEvent("frontier-scout-3", "source-scout", minutesBefore(base, 9), "turn", "Source review completed", "complete", "observed", 186_000, "completed"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "source-archive",
+            title: "Archive source snapshot",
+            role: "archivist",
+            assignment: "Weekly source snapshot",
+            projectId: "source-review",
+            projectName: "Source Review",
+            state: "interrupted",
+            evidence: "observed",
+            ageMinutes: 73,
+            currentAction: "Last archive run stopped before completion",
+            model: "agent-core",
+            reasoningEffort: "medium",
+            tokenUsage: 32_900,
+            branch: "research/source-snapshot",
+            parentAgentId: "source-scout",
+            childCount: 0,
+            events: [
+                demoEvent("frontier-archive-1", "source-archive", minutesBefore(base, 104), "turn", "Earlier archive completed", "complete", "observed", 320_000, "completed"),
+                demoEvent("frontier-archive-2", "source-archive", minutesBefore(base, 73), "turn", "Archive run stopped", "interrupted", "observed", 44_000, "interrupted"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "release-scout",
+            title: "Scan release checklist",
+            role: "scout",
+            assignment: "Release checklist",
+            projectId: "release-readiness",
+            projectName: "Release Readiness",
+            state: "reading",
+            evidence: "observed",
+            ageMinutes: 5,
+            currentAction: "Scanning the release checklist",
+            model: "agent-scout",
+            reasoningEffort: "high",
+            tokenUsage: 42_800,
+            branch: "release/checklist-scan",
+            parentAgentId: "release-verifier",
+            childCount: 0,
+            events: [
+                demoEvent("release-scout-1", "release-scout", minutesBefore(base, 15), "tool", "Checklist scan started", "reading", "observed", 66_000, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "release-mapper",
+            title: "Map release dependencies",
+            role: "mapper",
+            assignment: "Dependency map",
+            projectId: "release-readiness",
+            projectName: "Release Readiness",
+            state: "running",
+            evidence: "derived",
+            ageMinutes: 7,
+            currentAction: "Mapping release dependencies",
+            model: "agent-spark",
+            reasoningEffort: "medium",
+            tokenUsage: 38_400,
+            branch: "release/dependency-map",
+            parentAgentId: "release-verifier",
+            childCount: 0,
+            events: [
+                demoEvent("release-mapper-1", "release-mapper", minutesBefore(base, 7), "file", "Dependency map updated", "running", "derived", 41_000, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "product-annotation-check",
+            title: "Check interface annotations",
+            role: "reviewer",
+            assignment: "Interface annotations",
+            projectId: "product-update",
+            projectName: "Product Update",
+            state: "verifying",
+            evidence: "observed",
+            ageMinutes: 8,
+            currentAction: "Checking interface annotations",
+            model: "agent-spark",
+            reasoningEffort: "high",
+            tokenUsage: 51_700,
+            branch: "product/interface-annotations",
+            parentAgentId: "product-draft",
+            childCount: 0,
+            events: [
+                demoEvent("product-annotation-check-1", "product-annotation-check", minutesBefore(base, 8), "verification", "Interface annotations checked", "verifying", "observed", 52_000, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "field-relay",
+            title: "Relay field note",
+            role: "research assistant",
+            assignment: "Field-note handoff",
+            projectId: "field-research",
+            projectName: "Field Research",
+            state: "waiting",
+            evidence: "derived",
+            ageMinutes: 11,
+            currentAction: "Waiting for the next field note",
+            model: "agent-bridge",
+            reasoningEffort: "medium",
+            tokenUsage: 27_600,
+            branch: "research/field-note-handoff",
+            parentAgentId: "field-coordinator",
+            childCount: 0,
+            attentionReason: "Waiting on the field research coordinator",
+            events: [
+                demoEvent("field-relay-1", "field-relay", minutesBefore(base, 11), "message", "Field note requested", "waiting", "observed", undefined, "inProgress"),
+            ],
+        }),
+        demoAgent(base, {
+            id: "product-review-notes",
+            title: "Record review decision",
+            role: "scribe",
+            assignment: "Decision notes",
+            projectId: "product-update",
+            projectName: "Product Update",
+            state: "complete",
+            evidence: "observed",
+            ageMinutes: 38,
+            currentAction: "Archived the last review notes",
+            model: "agent-core",
+            reasoningEffort: "medium",
+            tokenUsage: 22_100,
+            branch: "product/decision-notes",
+            parentAgentId: "product-interface-review",
+            childCount: 0,
+            events: [
+                demoEvent("product-review-notes-1", "product-review-notes", minutesBefore(base, 38), "file", "Decision notes archived", "complete", "observed", 31_000, "completed"),
+            ],
+        }),
+    ];
+    const projects = [
+        projectSnapshot("release-readiness", "Release Readiness", "#68e3d0", agents),
+        projectSnapshot("product-update", "Product Update", "#a993ff", agents),
+        projectSnapshot("source-review", "Source Review", "#f0cf6d", agents),
+        projectSnapshot("field-research", "Field Research", "#ff9b71", agents),
+    ];
+    return {
+        schemaVersion: 1,
+        mode: "demo",
+        generatedAt: base.toISOString(),
+        sourceFreshness: base.toISOString(),
+        sourceLabel: "Demo world",
+        projects,
+        agents,
+        attention: agents.filter(isQueuedAgent).map((agent) => agent.id),
+        privacy: { rawContentExposed: false, redactionsApplied: 14 },
+        warnings: ["Demo scene uses synthetic task metadata. A live source is not connected."],
+    };
+}

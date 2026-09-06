@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentarium.local/schema/world-snapshot-v1.json",
+  "title": "Agentarium WorldSnapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "mode", "generatedAt", "sourceFreshness", "projects", "agents", "privacy"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "mode": { "enum": ["live", "demo"] },
+    "generatedAt": { "type": "string", "format": "date-time", "maxLength": 40 },
+    "sourceFreshness": {
+      "oneOf": [
+        { "const": "unknown" },
+        { "type": "string", "format": "date-time", "maxLength": 40 }
+      ]
+    },
+    "sourceLabel": { "type": "string", "minLength": 1, "maxLength": 48 },
+    "projects": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/project" } },
+    "agents": { "type": "array", "maxItems": 240, "items": { "$ref": "#/$defs/agent" } },
+    "attention": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rawContentExposed", "redactionsApplied"],
+      "properties": {
+        "rawContentExposed": { "const": false },
+        "redactionsApplied": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    },
+    "warnings": { "type": "array", "maxItems": 8, "items": { "type": "string", "maxLength": 160 } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$" },
+    "state": {
+      "enum": ["thinking", "reading", "editing", "running", "delegating", "waiting", "needs-you", "verifying", "failed", "complete", "interrupted", "idle", "stale", "unknown"]
+    },
+    "evidence": { "enum": ["observed", "derived", "unknown"] },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "color", "agentIds", "activeCount", "attentionCount"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "agentIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "activeCount": { "type": "integer", "minimum": 0, "maximum": 240 },
+        "attentionCount": { "type": "integer", "minimum": 0, "maximum": 240 }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "agentId", "timestamp", "kind", "label", "state", "source", "evidence"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "agentId": { "$ref": "#/$defs/id" },
+        "timestamp": { "type": "string", "format": "date-time", "maxLength": 40 },
+        "kind": { "enum": ["turn", "command", "file", "tool", "collaboration", "message", "approval", "verification", "system"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "state": { "$ref": "#/$defs/state" },
+        "source": { "type": "string", "minLength": 1, "maxLength": 48 },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "durationMs": { "type": "integer", "minimum": 0, "maximum": 86400000 },
+        "status": { "enum": ["inProgress", "completed", "failed", "interrupted", "declined"] }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "projectId", "projectName", "state", "evidence", "lastSeen", "ageMs", "currentAction", "childCount", "events"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nickname": { "type": "string", "maxLength": 96 },
+        "role": { "type": "string", "maxLength": 64 },
+        "assignment": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "projectId": { "$ref": "#/$defs/id" },
+        "projectName": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "state": { "$ref": "#/$defs/state" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "lastSeen": { "type": "string", "format": "date-time", "maxLength": 40 },
+        "ageMs": { "type": "integer", "minimum": 0, "maximum": 31536000000 },
+        "currentAction": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "model": { "type": "string", "maxLength": 80 },
+        "reasoningEffort": { "type": "string", "maxLength": 16 },
+        "tokenUsage": { "type": "integer", "minimum": 0, "maximum": 1000000000000 },
+        "branch": { "type": "string", "maxLength": 80 },
+        "parentAgentId": { "$ref": "#/$defs/id" },
+        "childCount": { "type": "integer", "minimum": 0, "maximum": 240 },
+        "attentionReason": { "type": "string", "maxLength": 120 },
+        "events": { "type": "array", "maxItems": 24, "items": { "$ref": "#/$defs/event" } }
+      }
+    }
+  }
+}

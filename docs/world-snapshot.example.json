@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "mode": "live",
+  "generatedAt": "2026-08-30T00:00:00.000Z",
+  "sourceFreshness": "2026-08-30T00:00:00.000Z",
+  "sourceLabel": "Example harness",
+  "projects": [
+    {
+      "id": "project-example",
+      "name": "Example project",
+      "color": "#7EE7D1",
+      "agentIds": ["agent-lead", "agent-helper"],
+      "activeCount": 1,
+      "attentionCount": 0
+    }
+  ],
+  "agents": [
+    {
+      "id": "agent-lead",
+      "title": "Ship the release candidate",
+      "role": "lead",
+      "projectId": "project-example",
+      "projectName": "Example project",
+      "state": "verifying",
+      "evidence": "observed",
+      "lastSeen": "2026-08-30T00:00:00.000Z",
+      "ageMs": 0,
+      "currentAction": "Verifying the release boundary",
+      "childCount": 1,
+      "events": [
+        {
+          "id": "event-lead-01",
+          "agentId": "agent-lead",
+          "timestamp": "2026-08-30T00:00:00.000Z",
+          "kind": "verification",
+          "label": "Release gate running",
+          "state": "verifying",
+          "source": "example-harness",
+          "evidence": "observed",
+          "status": "inProgress"
+        }
+      ]
+    },
+    {
+      "id": "agent-helper",
+      "title": "Compatibility review",
+      "role": "reviewer",
+      "assignment": "Provider compatibility",
+      "projectId": "project-example",
+      "projectName": "Example project",
+      "state": "complete",
+      "evidence": "observed",
+      "lastSeen": "2026-08-29T23:58:00.000Z",
+      "ageMs": 120000,
+      "currentAction": "Compatibility review complete",
+      "parentAgentId": "agent-lead",
+      "childCount": 0,
+      "events": []
+    }
+  ],
+  "attention": [],
+  "privacy": {
+    "rawContentExposed": false,
+    "redactionsApplied": 0
+  },
+  "warnings": []
+}

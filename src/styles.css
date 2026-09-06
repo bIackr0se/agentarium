@@ -1,0 +1,342 @@
+/* Sculpted world: artwork owns the terrain; HTML owns all state and interaction. */
+.archipelago { --world-ink:var(--shell-ink); --world-muted:var(--shell-muted); --world-panel:var(--shell-panel); --world-panel-2:#f0ecdf; --world-line:var(--shell-line); --world-cyan:#356b54; --world-amber:#9a611d; --world-coral:#b74730; --world-violet:#71657a; --world-cream:#fcf8ee; position:relative; min-width:0; color:var(--world-ink); }
+.archipelago button { font:inherit; color:inherit; cursor:pointer; }
+.world-commandbar { position:relative; z-index:20; display:flex; justify-content:space-between; align-items:center; gap:16px; padding:12px 28px; border-bottom:1px solid var(--shell-line); background:var(--shell-panel); }
+.world-commandbar__context,.world-commandbar__actions,.world-breadcrumbs,.world-commandbar__source { display:flex; align-items:center; gap:12px; min-width:0; }
+.world-breadcrumbs { font-size:13px; flex-wrap:wrap; gap:9px; }
+.world-breadcrumbs button { border:0; background:none; padding:5px 0; color:var(--shell-muted); }
+.world-breadcrumbs button:not(.world-breadcrumbs__back),.world-breadcrumbs [aria-current] { max-width:min(32ch,100%); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.world-breadcrumbs [aria-current] { font-weight:600; }
+.world-breadcrumbs__mark { display:none; }
+.world-breadcrumbs__back { min-width:30px; }
+.world-commandbar__source { font-size:12px; color:var(--shell-muted); white-space:nowrap; }
+.world-commandbar__source strong { color:#785626; }
+.world-commandbar__live,.activity-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#52794e; flex-shrink:0; }
+.world-commandbar__actions { font-size:12px; gap:10px; }
+.world-commandbar__actions button,.world-commandbar__options summary { border:0; border-radius:7px; padding:9px 12px; background:transparent; }
+.world-commandbar__actions button:hover,.world-commandbar__options summary:hover { background:#ede9dc; }
+.world-commandbar__actions .is-on { background:#e0e8db; color:#244d36; }
+.world-commandbar__actions small { margin-left:5px; color:var(--shell-muted); }
+.world-commandbar__options { position:relative; }
+.world-commandbar__options summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:6px; }
+.world-commandbar__options summary::-webkit-details-marker { display:none; }
+.world-commandbar__options summary::after { content:''; width:5px; height:5px; border-right:1px solid currentColor; border-bottom:1px solid currentColor; transform:rotate(45deg); margin:0 3px 3px; }
+.world-commandbar__options-body { position:absolute; top:44px; right:0; min-width:200px; padding:8px; background:var(--shell-panel); border:1px solid var(--shell-line); border-radius:12px; }
+.world-commandbar__options-body button { display:flex; width:100%; gap:10px; text-align:left; }
+.control-label-short { display:none; }
+.world-workspace { position:relative; }
+.world-stage { min-width:0; animation:surface-enter 180ms ease-out; }
+.zoom-scene { position:relative; }
+.realm-map--overview { position:relative; min-height:calc(100svh - 157px); padding:34px 320px 32px 30px; background:var(--sea); }
+.overview-map__hud { display:contents; }
+.overview-map__hud > div:first-child { position:relative; z-index:1; pointer-events:none; }
+.scene-heading__eyebrow { display:none; }
+.scene-heading h2,.project-hero h2,.task-village__plaque h2 { font-size:clamp(28px,3.2vw,48px); font-weight:500; line-height:1.12; letter-spacing:-.035em; margin:0 0 10px; text-wrap:balance; }
+.scene-heading p,.project-hero p { font-size:15px; color:#596357; margin:0; }
+.overview-summary { position:absolute; right:0; top:0; bottom:0; width:280px; padding:32px 24px 22px; background:var(--shell-panel); border-left:1px solid var(--shell-line); display:flex; flex-direction:column; align-items:stretch; gap:14px; }
+.overview-summary h3 { font-size:15px; font-weight:600; margin:0 0 8px; }
+.scope-strip { order:4; display:flex; gap:18px; font-size:12px; padding:20px 0 0; margin:auto 0 0; border-top:1px solid var(--shell-line); }
+.scope-strip > div { display:flex; flex-direction:column; gap:5px; }
+.scope-strip dt { color:var(--shell-muted); }
+.scope-strip dd { font-size:18px; margin:0; font-variant-numeric:tabular-nums; }
+.overview-summary__state { font-size:12px; color:var(--shell-muted); margin:0; order:5; line-height:1.6; }
+.overview-summary__action { display:flex; flex-direction:column; gap:16px; padding:0 0 24px; text-align:left; background:none; border:0; border-bottom:1px solid var(--shell-line); }
+.overview-summary__action-copy { display:flex; flex-direction:column; gap:8px; }
+.overview-summary__action-copy small { color:#936019; font-size:12px; }
+.overview-summary__action-copy > strong { font-size:18px; font-weight:500; line-height:1.35; }
+.overview-summary__action-project { font-size:12px; color:var(--shell-muted); }
+.overview-summary__action-reason { font-size:12px; color:var(--shell-muted); line-height:1.5; }
+.overview-summary__action-meta { display:flex; flex-direction:column; gap:10px; font-size:12px; color:var(--shell-muted); }
+.overview-summary__action-meta > strong { display:flex; align-items:center; justify-content:space-between; background:#214b37; color:#fff9ed; border-radius:8px; padding:12px 14px; font-size:13px; font-weight:500; }
+.overview-summary__action:hover .overview-summary__action-meta > strong { background:#326448; color:#fff9ed; border-color:#326448; }
+.overview-summary__action-label--short { display:none; }
+.team-activity { padding-top:6px; }
+.team-activity > button { display:flex; gap:9px; align-items:center; width:100%; text-align:left; padding:10px 0; background:none; border:0; }
+.team-activity > button:hover { background:#efeede; border-radius:8px; }
+.team-activity .robot { width:39px; height:39px; flex-shrink:0; background:#eee9d9; border-radius:50%; }
+.team-activity button > span:not(.robot) { min-width:0; flex:1; display:flex; flex-direction:column; gap:4px; }
+.team-activity strong { font-size:12px; font-weight:500; overflow-wrap:anywhere; }
+.team-activity small { font-size:12px; color:var(--shell-muted); }
+.activity-dot--needs-you,.activity-dot--waiting { background:#c4862b; }
+.activity-dot--failed,.activity-dot--interrupted { background:#b54e38; }
+.activity-dot--unknown,.activity-dot--stale,.activity-dot--idle { background:#9a9e8e; }
+.world-local-note { order:6; font-size:12px; color:var(--shell-muted); margin:3px 0 0; }
+.realm-map__islands { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; max-width:1100px; margin:4px auto 0; align-items:start; }
+.project-card { position:relative; min-width:0; text-align:center; }
+.realm-project__terrain { position:relative; height:clamp(190px,22vw,330px); }
+.island-art { width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; user-select:none; }
+.realm-project__terrain > .island-art { position:absolute; inset:0; transition:transform .5s cubic-bezier(.16,1,.3,1); }
+.realm-project__portal { position:absolute; inset:0; width:100%; display:flex; align-items:flex-end; justify-content:center; background:transparent; border:0; padding:0; }
+.project-card__plate { position:relative; z-index:3; display:flex; align-items:center; gap:10px; max-width:95%; padding:12px 16px; text-align:left; background:#fcf9efd9; border-radius:12px; box-shadow:0 6px 16px #4c493719; }
+.project-card__identity { display:flex; flex-direction:column; gap:4px; min-width:0; overflow-wrap:anywhere; }
+.project-card__identity > strong { font-size:15px; font-weight:600; }
+.project-card__identity > small { font-size:12px; color:var(--shell-muted); }
+.project-card__eyebrow,.project-card__statusline,.project-card__open-label { display:none; }
+.project-card__open { color:#667252; font-size:20px; }
+.project-card__verified { color:#476a3c; font-size:12px; }
+.project-card__tasks { display:flex; flex-direction:column; align-items:stretch; gap:0; padding:6px 12px 0; max-width:360px; margin:auto; }
+.task-index-row { display:flex; gap:8px; width:100%; align-items:center; justify-content:space-between; background:transparent; border:0; text-align:left; padding:7px 10px; border-radius:7px; }
+.task-index-row:hover { background:#e5e9d9; }
+.task-index-row__copy { display:flex; flex-direction:column; gap:3px; }
+.task-index-row strong { font-size:13px; font-weight:500; }
+.task-index-row small,.task-index-row__context,.task-index-row__eyebrow { font-size:12px; color:var(--shell-muted); }
+.task-index-row__count { font-size:12px; color:var(--shell-muted); }
+.realm-map__legend { margin:24px auto 0; text-align:center; font-size:12px; color:var(--shell-muted); }
+.realm-project__crew { position:absolute; z-index:2; inset:56% 25% 24%; pointer-events:none; display:flex; align-items:center; justify-content:center; gap:5%; }
+.robot { display:inline-block; width:38px; height:38px; position:relative; }
+.robot img { width:100%; height:100%; object-fit:contain; display:block; }
+.realm-project__agent .robot { width:30px; height:30px; }
+.realm-project__agent.is-working { animation:crew-work 7s ease-in-out infinite alternate; }
+.realm-project__agent:nth-child(2n) { animation-delay:-3s; }
+.realm-project__agent.is-attention::after { content:''; position:absolute; top:-15px; right:0; width:16px; height:16px; border-radius:50%; background:#c38a32; color:white; font-size:12px; font-weight:700; text-align:center; }
+.realm-project__agent { position:relative; }
+@keyframes crew-work { 0%,15% { transform:translate(-8px,0); } 60%,100% { transform:translate(9px,-6px); } }
+.realm-project__crew-more { font-size:12px; }
+/* Architecture is supplied by the scene plates, not repeated decorative tiles. */
+.realm-decor,.realm-project__lake,.realm-project__trail,.realm-project__crest,.realm-project__beacon-row,.realm-map__sky,.realm-map__sun,.realm-map__horizon,.settlement-growth__home,.settlement-growth__tree,.settlement-growth__garden,.settlement-growth__path,.settlement-growth__flag,.pixel-home,.agent-home>.pixel-art,.agent-workspot>.pixel-art,.project-map__plaza,.project-map__road,.project-map__water,.project-hero__crest,.district-card__road,.district-card__tree,.district-card__house,.district-card__terrain-label,.district-card__workspot,.task-village__skyline,.task-village-water,.task-village__completion-bridge,.realm-beacon { display:none; }
+.settlement-growth { position:absolute; z-index:4; right:15%; top:28%; pointer-events:none; }
+.settlement-growth__label { color:#335a31; background:#f6f5e9; padding:5px 8px; font-size:12px; border-radius:5px; }
+.zoom-scene--project { padding:30px; min-height:calc(100svh - 158px); background:var(--sea); }
+.project-hero { max-width:750px; }
+.count-strip { display:flex; gap:14px; margin-top:14px; font-size:12px; color:var(--shell-muted); }
+.count-strip > span { display:flex; gap:5px; }
+.count-strip strong { color:var(--shell-ink); }
+.district-heading { display:flex; justify-content:space-between; gap:12px; font-size:12px; margin:24px 0 0; color:var(--shell-muted); }
+.district-heading > div { display:flex; gap:8px; }
+.district-heading p { margin:0; }
+.district-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+.district-card { background:transparent; border:0; display:flex; flex-direction:column; min-width:0; text-align:left; max-width:650px; width:100%; margin:auto; padding:0; }
+.district-card__terrain { display:block; position:relative; width:100%; height:340px; }
+.district-card__agents { position:absolute; left:40%; top:66%; display:flex; gap:8px; }
+.district-card__agent { width:35px; height:35px; }
+.district-card--working .district-card__agents { animation:crew-work 8s ease-in-out infinite alternate; }
+.district-card__info-plate { display:block; width:min(480px,100%); margin:-30px auto 0; z-index:2; background:var(--shell-panel); padding:20px 24px; border-radius:12px; box-shadow:0 8px 24px #3b482015; }
+.district-card__topline { font-size:12px; color:var(--shell-muted); display:flex; justify-content:space-between; }
+.district-card__number,.district-card__context { display:none; }
+.district-card__copy { display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+.district-card__copy > strong { font-size:22px; font-weight:500; }
+.district-card__copy small { color:var(--shell-muted); font-size:12px; }
+.district-card__action { display:flex; justify-content:space-between; font-size:13px; color:#356148; }
+.zoom-scene--task { padding:28px; background:var(--sea); min-height:calc(100svh - 158px); }
+.task-village { position:relative; }
+.task-village__plaque { margin:0 0 5px; }
+.task-village__plaque > span { font-size:12px; color:var(--shell-muted); display:block; margin-bottom:9px; }
+.task-village__plaque > strong { display:block; font-size:13px; font-weight:400; color:var(--shell-muted); }
+.task-village__plaque > small { font-size:12px; color:var(--shell-muted); display:inline-block; margin:8px 12px 0 0; }
+.agent-lot-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 24px; max-width:1050px; margin:auto; }
+.agent-lot { height:290px; position:relative; min-width:0; }
+.agent-lot__art { position:absolute; inset:0; }
+.agent-home { position:absolute; left:34%; top:55%; width:2px; height:2px; }
+.agent-workspot { position:absolute; left:60%; top:72%; width:2px; height:2px; }
+.agent-workspot > span:not(.agent-route-anchor) { position:absolute; white-space:nowrap; left:-15px; top:8px; font-size:12px; color:#576148; background:#f6f2e0; border-radius:4px; padding:2px 4px; }
+.agent-route-anchor { position:absolute; width:2px; height:2px; }
+.agent-villager__effect { position:absolute; right:-5px; top:-8px; width:21px; height:21px; line-height:21px; background:#f8f5e9; border-radius:50%; color:#536846; font-size:12px; }
+.agent-lot.is-attention .agent-villager__effect { background:#be8128; color:white; }
+.agent-villager__nametag { position:absolute; z-index:4; left:50%; bottom:5px; transform:translateX(-50%); display:flex; flex-direction:column; gap:4px; min-width:140px; max-width:95%; text-align:center; background:var(--shell-panel); padding:10px 16px; border-radius:9px; box-shadow:0 6px 18px #35472b15; border:0; cursor:pointer; }
+.agent-villager__nametag strong { font-size:14px; font-weight:500; overflow-wrap:anywhere; }
+.agent-villager__nametag small { font-size:12px; color:var(--shell-muted); }
+.agent-lot.is-selected .agent-villager__nametag { background:#254b38; color:#fff9ed; }
+.agent-lot.is-selected .agent-villager__nametag small { color:#d7e0cb; }
+.agent-lot.is-future,.agent-lot.is-lens-dimmed { opacity:.42; }
+.agent-lot__sleep { position:absolute; left:40%; top:45%; font-size:12px; color:var(--shell-muted); }
+.task-context-strip { display:flex; flex-wrap:wrap; gap:12px; max-width:900px; margin:15px auto; }
+.agent-focus-card,.evidence-proof-card,.evidence-lens-prompt { display:flex; flex-direction:column; align-items:start; gap:10px; flex:1 1 240px; min-width:0; padding:16px; background:var(--shell-panel); border-radius:10px; font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.agent-focus-card > strong,.evidence-proof-card__event { font-size:15px; font-weight:500; }
+.agent-focus-card button { background:none; border:1px solid var(--shell-line); border-radius:7px; padding:8px 12px; }
+.evidence-proof-card__heading { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.evidence-proof-card__strength { padding:4px 8px; background:#e9edde; border-radius:5px; }
+.evidence-lens-prompt { display:flex; flex-direction:column; gap:7px; }
+.task-village-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:18px; font-size:12px; color:var(--shell-muted); margin-top:20px; }
+.legend-swatch { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; background:#759466; }
+.legend-swatch--waiting { background:#c3903c; }
+.legend-swatch--home { background:#9ca292; }
+.world-rail { position:absolute; z-index:18; width:min(320px,100%); max-height:calc(100svh - 180px); overflow:auto; background:var(--shell-panel); border:1px solid var(--shell-line); border-radius:0 0 12px 0; padding:18px; box-sizing:border-box; }
+.world-rail__heading { display:flex; justify-content:space-between; font-size:12px; margin-bottom:15px; }
+.world-rail button > span { min-width:0; }
+.world-rail strong,.world-rail small { overflow-wrap:anywhere; }
+.world-rail button { width:100%; display:flex; align-items:center; gap:10px; text-align:left; background:none; border:0; border-radius:6px; padding:10px; font-size:12px; }
+.world-rail button:hover,.world-rail .is-current,.world-rail .is-selected { background:#e9edde; }
+.world-rail button > span { display:flex; flex-direction:column; gap:4px; }
+.world-rail small { font-size:12px; color:var(--shell-muted); }
+.world-tree__tasks { padding-left:10px; }
+.world-tree__agents { padding-left:12px; }
+.world-tree__agents-heading { display:flex; justify-content:space-between; font-size:12px; margin:10px 0; }
+.reconnect-scene,.empty-world-scene { min-height:calc(100svh - 180px); padding:50px 7%; background:var(--sea); }
+.empty-world-scene__copy { max-width:900px; }
+.empty-world-scene__description,.empty-world-scene__detail,.reconnect-scene p { max-width:65ch; color:var(--shell-muted); line-height:1.6; }
+.empty-world-scene__actions { display:flex; flex-wrap:wrap; gap:10px; margin:20px 0; }
+.empty-world-scene__action { padding:12px 18px; background:var(--shell-panel); border:1px solid var(--shell-line); border-radius:8px; }
+.empty-world-scene__action--primary { background:#254b38; color:#fff9ed!important; }
+.empty-world-scene__boundary { font-size:12px; color:var(--shell-muted); margin-top:20px; }
+.empty-harbor { display:none; }
+.is-cinematic { position:fixed; inset:0; z-index:100; overflow:auto; background:var(--sea); }
+.is-cinematic .world-commandbar { position:sticky; top:0; }
+.is-cinematic .realm-map--overview { min-height:calc(100svh - 60px); }
+.is-cinematic .overview-summary { display:none; }
+.is-cinematic .realm-map--overview { padding-right:30px; }
+.archipelago[data-motion="off"] .realm-project__agent,.archipelago[data-motion="off"] .district-card__agents { animation:none; }
+@media(min-width:1500px) { .realm-map--overview { padding-right:355px; } .overview-summary { width:310px; } .realm-map__islands { gap:0 45px; } .project-card:nth-child(2n) { transform:translateY(-24px); } }
+@media(max-width:1100px) { .realm-map--overview { padding:26px 265px 24px 22px; } .overview-summary { width:240px; padding:24px 18px; } .realm-project__terrain { height:210px; } .realm-map__islands { gap:12px; } .scene-heading h2 { font-size:32px; } .team-activity > button { padding:8px 0; } .world-commandbar { padding:10px 20px; flex-wrap:wrap; } }
+@media(max-width:760px) { .realm-map--overview { padding:24px 18px; display:flex; flex-direction:column; } .overview-summary { position:static; width:auto; order:3; margin:22px -18px -24px; padding:24px; border-left:0; border-top:1px solid var(--shell-line); } .overview-map__hud { display:contents; } .overview-map__hud > div:first-child { order:0; } .realm-map__islands { order:1; width:100%; margin:8px auto 0; gap:12px; } .realm-map__legend { order:2; } .realm-project__terrain { height:220px; } .project-card__plate { padding:9px 11px; } .project-card__identity > strong { font-size:13px; } .task-index-row { padding:6px 0; } .team-activity { display:none; } .scope-strip { margin:0; } .overview-summary__action { padding-bottom:16px; } .world-commandbar__source { margin-left:auto; } .world-commandbar__actions { width:100%; justify-content:space-between; } .world-commandbar { padding:10px 16px; gap:8px; } .world-commandbar__context { width:100%; } .agent-lot { height:245px; } .agent-lot-grid { gap:12px; } .task-village__plaque h2 { font-size:30px; } .zoom-scene--task,.zoom-scene--project { padding:24px 16px; } .district-heading p { display:none; } .control-label-long { display:none; } .control-label-short { display:inline; } }
+@media(max-width:440px) { .realm-map__islands,.agent-lot-grid { grid-template-columns:1fr; } .realm-project__terrain { height:285px; } .realm-map--overview { padding-top:24px; } .realm-map__islands { max-width:370px; } .scene-heading h2 { font-size:32px; } .agent-lot { height:300px; } .project-card__identity > strong { font-size:15px; } .world-breadcrumbs { font-size:12px; } .world-commandbar__source { font-size:12px; gap:5px; } .world-commandbar__actions { gap:2px; } .world-commandbar__actions button,.world-commandbar__options summary { padding:8px; } .district-card__terrain { height:290px; } .district-card__info-plate { padding:18px; } }
+@media(prefers-reduced-motion:reduce) { .archipelago * { animation:none!important; transition:none!important; } }
+@media(forced-colors:active) { .project-card__plate,.agent-villager__nametag,.district-card__info-plate { border:1px solid CanvasText; background:Canvas; } .activity-dot { border:1px solid CanvasText; } }
+
+.agent-villager__nametag:hover { box-shadow:0 6px 20px #35472b30; }
+.agent-villager__nametag:disabled { cursor:default; opacity:.5; }
+@media (min-width: 1100px) { .realm-map__islands { max-width:1000px; } .realm-project__terrain { height:clamp(240px,23vw,350px); } }
+
+@media (max-width: 760px) {
+  .overview-summary { order:1; margin:20px 0 0; padding:18px; border:1px solid var(--shell-line); border-radius:12px; gap:4px; }
+  .overview-summary h3 { margin:0 0 4px; }
+  .overview-summary .scope-strip,.overview-summary__state,.overview-summary .world-local-note,.overview-summary__action-reason,.overview-summary__action-meta > span,.overview-summary__action-copy > small { display:none; }
+  .overview-summary__action { padding:0; display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px; }
+  .overview-summary__action-copy > strong { font-size:15px; }
+  .overview-summary__action-project { font-size:12px; }
+  .overview-summary__action-label--long { display:none; }
+  .overview-summary__action-label--short { display:inline; }
+  .realm-map__islands { order:2; margin-top:14px; }
+  .realm-map__legend { order:3; }
+}
+
+.world-icon { flex-shrink:0; vertical-align:middle; }
+.world-commandbar__actions > button { display:flex; align-items:center; gap:7px; }
+.agent-villager__effect { display:flex; align-items:center; justify-content:center; }
+.agent-villager__effect .world-icon { width:14px; height:14px; }
+@media (min-width: 1101px) {
+  .toolbar { min-height:72px; padding-top:14px; padding-bottom:14px; }
+  .realm-map--overview { padding-top:26px; padding-bottom:18px; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .realm-map__islands { display:block; position:relative; height:calc(100svh - 252px); min-height:620px; max-width:1150px; margin-top:0; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card { position:absolute; transform:none; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card:nth-child(1) { width:57%; left:29%; bottom:0; z-index:3; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card:nth-child(1) .realm-project__terrain { height:clamp(360px,34vw,510px); }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card:nth-child(2) { width:43%; right:0; top:-72px; z-index:2; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card:nth-child(2) .realm-project__terrain { height:clamp(280px,25vw,370px); }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card:nth-child(3) { width:37%; left:0; top:40px; z-index:1; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card:nth-child(3) .realm-project__terrain { height:clamp(260px,23vw,340px); }
+  .realm-map[data-project-count="4"] .project-card:nth-child(4) { width:30%; left:0; bottom:0; z-index:4; }
+  .realm-map[data-project-count="4"] .project-card:nth-child(4) .realm-project__terrain { height:clamp(210px,20vw,285px); }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .project-card__tasks { display:none; }
+  .realm-map:is([data-project-count="3"],[data-project-count="4"]) .realm-project__portal { top:30%; left:10%; width:80%; }
+  .realm-map__legend { margin-top:18px; }
+  .task-village:is([data-agent-count="1"],[data-agent-count="2"]) .agent-lot { height:clamp(400px,39vw,600px); }
+  .task-village[data-agent-count="1"] .agent-lot-grid { grid-template-columns:1fr; max-width:700px; }
+}
+
+/* The environment plate and all route coordinates share one aspect ratio. */
+.realm-map--overview { padding:0 24% 0 0; background:var(--sea); min-height:0; }
+.overview-map__hud > div:first-child { position:absolute; left:2.5%; top:4%; z-index:6; max-width:38%; }
+.scene-heading h2 { font-size:clamp(26px,2.7vw,46px); letter-spacing:-.035em; margin-bottom:12px; }
+.scene-heading p { max-width:24ch; font-size:clamp(14px,1.15vw,18px); line-height:1.55; }
+.reference-world { position:relative; width:100%; aspect-ratio:3 / 2; overflow:hidden; }
+.reference-world__plate { display:block; width:100%; height:100%; }
+.reference-project { position:absolute; inset:0; pointer-events:none; }
+.reference-project__label { position:absolute; pointer-events:auto; display:flex; align-items:start; gap:12px; max-width:34%; text-align:left; border:1px solid #e4ddca; background:#fdf9ec; border-radius:14px; padding:14px 18px; box-shadow:0 4px 8px #514b2510; }
+.reference-project__label > span { display:flex; flex-direction:column; gap:7px; }
+.reference-project__label strong { font-size:16px; font-weight:600; overflow-wrap:anywhere; }
+.reference-project__label small { font-size:14px; color:#5b7652; }
+.reference-project__label > i { margin-top:6px; }
+.reference-project__label > svg { display:none; }
+.reference-project__label:hover { background:#fffdf7; box-shadow:0 6px 15px #514b2525; }
+.reference-project--0 .reference-project__label { left:43%; top:88%; }
+.reference-project--1 .reference-project__label { left:76%; top:48%; }
+.reference-project--2 .reference-project__label { left:9%; top:48%; }
+.overview-summary { width:24%; padding:36px 30px; background:var(--shell-panel); gap:0; }
+.overview-summary h3 { font-size:18px; margin:0 0 28px; font-weight:600; }
+.overview-summary .scope-strip,.overview-summary__state,.overview-summary__action-copy > small,.overview-summary__action-reason,.overview-summary__action-meta > span { display:none; }
+.overview-summary__action { display:flex; flex-direction:column; align-items:stretch; gap:22px; padding:0 0 40px; border:0; border-bottom:1px solid var(--shell-line); border-radius:0; }
+.overview-summary__action-copy { gap:9px; padding-left:24px; position:relative; }
+.overview-summary__action-copy::before { content:''; position:absolute; left:0; top:5px; width:9px; height:9px; border-radius:50%; background:#c18b28; }
+.overview-summary__action-copy > strong { font-size:14px; font-weight:600; line-height:1.5; }
+.overview-summary__action-project { font-size:14px; overflow-wrap:anywhere; }
+.overview-summary__action-meta > strong { display:flex; justify-content:space-between; background:none; color:var(--shell-ink); border:1px solid var(--shell-line); border-radius:12px; padding:14px 18px; font-size:14px; font-weight:400; }
+.team-activity { margin-top:34px; }
+.team-activity > button { padding:18px 0; gap:14px; }
+.team-activity > button > .robot { width:48px; height:48px; border-radius:50%; background:#e9e8da; padding:3px; flex-shrink:0; }
+.team-activity > button strong { font-size:14px; line-height:1.4; font-weight:500; overflow-wrap:anywhere; }
+.team-activity > button small { font-size:13px; }
+.world-local-note { margin-top:auto; padding-top:24px; border-top:1px solid var(--shell-line); font-size:14px; }
+.reference-more { padding:24px 36px 36px; border-top:1px solid var(--shell-line); }
+.reference-more > h3 { margin:0 0 16px; font-size:16px; font-weight:500; }
+.realm-map .reference-more .realm-map__islands { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); height:auto; min-height:0; margin:0; max-width:none; gap:24px; }
+.realm-map .reference-more .project-card { position:static; width:100%; max-width:520px; transform:none; }
+.realm-map .reference-more .project-card .realm-project__terrain { height:auto; aspect-ratio:var(--island-ratio); }
+.realm-map .reference-more .project-card__tasks { display:flex; }
+.realm-map .reference-more .realm-project__portal { inset:0; width:100%; }
+.archipelago[data-zoom-level="overview"] .world-commandbar { position:absolute; right:24%; top:10px; background:none; border:0; padding:0 12px; }
+.archipelago[data-zoom-level="overview"] .world-commandbar__context { display:none; }
+.world-commandbar__source { display:none; }
+.world-commandbar { padding:10px 32px; }
+.world-commandbar__options summary { font-size:12px; font-weight:400; }
+.zoom-scene--project,.zoom-scene--task { padding:36px max(28px,calc((100% - 1320px) / 2)); }
+.project-hero { display:flex; justify-content:space-between; align-items:center; gap:32px; max-width:none; padding-bottom:24px; border-bottom:1px solid var(--shell-line); }
+.project-hero h2,.task-village__plaque h2 { font-size:clamp(28px,3vw,40px); }
+.project-hero p { font-size:14px; line-height:1.5; }
+.count-strip { margin:0; display:flex; gap:24px; flex-wrap:wrap; }
+.count-strip > div { display:flex; flex-direction:column-reverse; gap:7px; min-width:48px; }
+.count-strip dd { margin:0; font-size:20px; font-weight:500; color:var(--shell-ink); }
+.count-strip dt { font-size:12px; }
+.district-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr)); gap:32px; padding-top:24px; }
+.district-card { max-width:650px; margin:0 auto; gap:12px; }
+.district-card__terrain { height:auto; }
+.district-card__info-plate { width:100%; margin:0; padding:22px 24px; box-shadow:none; border:1px solid var(--shell-line); }
+.district-card__copy > strong { font-size:22px; overflow-wrap:anywhere; }
+.project-map[data-task-count="1"] .district-card { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr); max-width:none; align-items:center; gap:48px; }
+.project-map[data-task-count="1"] .district-card__info-plate { background:transparent; border:0; padding:24px 0; }
+.project-map[data-task-count="1"] .district-card__copy > strong { font-size:28px; }
+.project-map[data-task-count="1"] .district-card__action { display:flex; padding:14px 18px; margin-top:24px; border:1px solid #cec9b5; border-radius:12px; max-width:240px; }
+.island-plane { position:relative; display:block; width:100%; aspect-ratio:var(--island-ratio); }
+.island-plane > .island-art { position:absolute; inset:0; width:100%; height:100%; }
+.agent-lot-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; max-width:1200px; margin:32px auto 0; align-items:start; }
+.task-village .agent-lot { height:auto; display:flex; flex-direction:column; gap:12px; }
+.task-village .agent-lot-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.task-village[data-agent-count="1"] .agent-lot-grid { grid-template-columns:1fr; max-width:760px; }
+.agent-villager__nametag { position:static; transform:none; width:100%; min-width:0; max-width:100%; text-align:left; padding:16px 18px; border-radius:12px; box-shadow:none; background:var(--shell-panel); border:1px solid var(--shell-line); }
+.agent-villager__nametag strong { font-size:16px; }
+.agent-villager__nametag small { display:flex; gap:8px; align-items:center; line-height:1.5; }
+.agent-home,.agent-workspot { left:var(--home-x); top:var(--home-y); width:0; height:0; }
+.agent-workspot { left:var(--work-x); top:var(--work-y); }
+.agent-workspot > span:not(.agent-route-anchor) { display:none; }
+.island-crew { position:absolute; inset:0; pointer-events:none; }
+.island-route-carrier { position:absolute; inset:0; pointer-events:none; transform:translate(var(--home-x),var(--home-y)); }
+.island-route-carrier[data-route-state="work"] { transform:translate(var(--work-x),var(--work-y)); }
+.island-route-carrier[data-route-state="commuting"] { animation:island-walk 12s linear infinite; animation-delay:calc(var(--agent-index,0) * -3s); }
+@keyframes island-walk { 0%,10%,100% { transform:translate(var(--home-x),var(--home-y)); } 30%,80% { transform:translate(var(--bend-x),var(--bend-y)); } 50%,60% { transform:translate(var(--work-x),var(--work-y)); } }
+.island-route-carrier > .agent-villager,.island-route-carrier > .island-crew__robot { position:absolute; left:0; top:0; width:10%; height:auto; aspect-ratio:1; transform:translate(-50%,-94%); }
+.island-route-carrier > .agent-villager { pointer-events:auto; min-width:38px; border:0; padding:0; background:none; animation:none!important; }
+.island-route-carrier > .agent-villager .robot { width:100%; height:100%; }
+.reference-project .island-crew__robot { width:3.8%; }
+.agent-lot__sleep { display:none; }
+.task-village__plaque { padding-bottom:20px; border-bottom:1px solid var(--shell-line); }
+.archipelago[data-motion="off"] .island-route-carrier[data-route-state="commuting"] { animation:none; }
+@media(prefers-reduced-motion:reduce) { .island-route-carrier { animation:none!important; } }
+@media(max-width:1100px) { .realm-map--overview { padding-right:26%; } .overview-summary { width:26%; padding:28px 20px; } .team-activity > button { gap:8px; } .team-activity > button > .robot { width:36px; height:36px; } .overview-summary h3 { margin-bottom:20px; } .reference-project__label { padding:10px 12px; gap:7px; } .reference-project__label strong { font-size:13px; } .reference-project__label small { font-size:12px; } .archipelago[data-zoom-level="overview"] .world-commandbar { right:26%; } }
+@media(max-width:760px) { .realm-map--overview { display:block; padding:0; } .overview-map__hud { display:contents; } .overview-map__hud > div:first-child { position:relative; max-width:none; left:auto; top:auto; padding:24px 18px 0; } .scene-heading p { max-width:none; } .reference-world { min-height:360px; aspect-ratio:3/2; } .reference-world__plate { object-fit:fill; } .overview-summary { position:static; display:flex; width:100%; margin:0; border:0; border-top:1px solid var(--shell-line); border-radius:0; padding:24px; } .overview-summary__action { display:flex; padding-bottom:0; border:0; } .overview-summary__action-meta > strong { display:flex; } .overview-summary__action-copy { padding-left:22px; } .overview-summary h3 { margin-bottom:18px; } .team-activity,.world-local-note { display:none; } .archipelago[data-zoom-level="overview"] .world-commandbar { right:6px; top:12px; } .reference-project__label { max-width:41%; padding:9px; border-radius:10px; } .reference-project--0 .reference-project__label { top:84%; left:40%; } .reference-project--1 .reference-project__label { left:63%; top:45%; } .reference-project--2 .reference-project__label { left:4%; top:45%; } .reference-project__label > i { display:none; } .reference-project__label > span { gap:4px; } .reference-more { padding:24px 18px; } .project-hero { align-items:start; flex-direction:column; gap:20px; } .count-strip { gap:24px; } .project-map[data-task-count="1"] .district-card { display:flex; gap:8px; } .project-map[data-task-count="1"] .district-card__info-plate { padding:8px 0; } .project-map[data-task-count="1"] .district-card__copy > strong { font-size:24px; } .project-map[data-task-count="1"] .district-card__action { margin-top:16px; } .zoom-scene--project,.zoom-scene--task { padding:24px 18px; } .task-village .agent-lot-grid { grid-template-columns:1fr; max-width:620px; gap:28px; } .agent-villager__nametag { padding:14px 16px; } }
+.task-village:is([data-agent-count="1"],[data-agent-count="2"]) .agent-lot { height:auto; }
+.project-card__identity > strong { font-size:inherit; }
+.reference-project__label .project-card__identity > strong { font-size:16px; }
+.reference-project__label .project-card__identity > strong { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.project-hero h2,.task-village__plaque h2,.reconnect-scene h2 { overflow-wrap:anywhere; }
+@media(max-width:760px) { .reference-world { min-height:0; aspect-ratio:3 / 2; } .reference-project__label .project-card__identity > strong { font-size:12px; } .reference-project__label small { font-size:12px; } .reference-project__label { padding:7px 9px; } }
+.island-plane { overflow:clip; }
+@media(min-width:1101px) {
+  .realm-map--overview { display:grid; grid-template-columns:76% 24%; padding:0; }
+  .overview-summary { position:static; width:auto; grid-column:2; grid-row:1; }
+  .reference-world { grid-column:1; grid-row:1; align-self:start; }
+  .reference-more { grid-column:1 / -1; }
+  .archipelago[data-zoom-level="overview"] .world-commandbar { right:24%; }
+}
+@media(min-width:761px) and (max-width:1100px) {
+  .realm-map--overview { display:block; padding:0; }
+  .overview-map__hud { display:contents; }
+  .overview-map__hud > div:first-child { position:relative; max-width:none; left:auto; top:auto; padding:24px 24px 0; }
+  .scene-heading p { max-width:none; }
+  .reference-world { min-height:0; aspect-ratio:3 / 2; }
+  .overview-summary { position:static; display:flex; width:100%; margin:0; padding:24px; border:0; border-top:1px solid var(--shell-line); border-radius:0; }
+  .overview-summary__action { padding-bottom:0; border:0; }
+  .overview-summary h3 { margin-bottom:18px; }
+  .team-activity,.world-local-note { display:none; }
+  .archipelago[data-zoom-level="overview"] .world-commandbar { right:6px; top:12px; }
+}
+@media(max-width:760px) { .world-commandbar__actions { justify-content:flex-end; } }
+@media(max-width:440px) { .world-commandbar__context { flex-wrap:wrap; } }
