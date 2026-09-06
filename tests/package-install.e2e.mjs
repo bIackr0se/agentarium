@@ -131,13 +131,19 @@ function waitForExit(child, timeoutMs = SHUTDOWN_TIMEOUT_MS) {
   });
 }
 
-async function stopLauncher(child) {
+async function stopLauncher(child, processGroup = false) {
   if (!child || child.exitCode !== null || child.signalCode !== null) return;
-  child.kill("SIGTERM");
+  if (processGroup && process.platform === "win32") {
+    await runCommand("taskkill", ["/pid", String(child.pid), "/t", "/f"]);
+    await waitForExit(child);
+    return;
+  }
+  const terminate = (signal) => processGroup ? process.kill(-child.pid, signal) : child.kill(signal);
+  terminate("SIGTERM");
   try {
     await waitForExit(child);
   } catch (error) {
-    child.kill("SIGKILL");
+    terminate("SIGKILL");
     await waitForExit(child, 2_000).catch(() => {});
     throw error;
   }
@@ -196,12 +202,14 @@ async function main() {
   const tempRoot = mkdtempSync(join(tmpdir(), "agentarium-package-install-"));
   const packDirectory = join(tempRoot, "pack");
   const consumerDirectory = join(tempRoot, "consumer");
+  const execDirectory = join(tempRoot, "exec");
   const inputDirectory = join(tempRoot, "input");
   const npmCacheDirectory = join(tempRoot, "npm-cache");
   const emptyHomeDirectory = join(tempRoot, "empty-home");
   let launcher = null;
+  let launcherProcessGroup = false;
   try {
-    for (const directory of [packDirectory, consumerDirectory, inputDirectory, emptyHomeDirectory]) {
+    for (const directory of [packDirectory, consumerDirectory, execDirectory, inputDirectory, emptyHomeDirectory]) {
       // npm creates its consumer node_modules tree; the other directories are
       // created explicitly so every path remains inside the one cleanup root.
       mkdirSync(directory, { recursive: true });
@@ -234,6 +242,11 @@ async function main() {
 
     const installedPackageDirectory = join(consumerDirectory, "node_modules", ...PACKAGE_NAME.split("/"));
     const installedLauncher = join(installedPackageDirectory, "bin", "agentarium.mjs");
+    const installedManifest = JSON.parse(readFileSync(join(installedPackageDirectory, "package.json"), "utf8"));
+    assert.deepEqual(installedManifest.dependencies ?? {}, {}, "prebuilt runtime must not download build dependencies");
+    for (const filename of ["react-MIT.txt", "space-grotesk-OFL.txt"]) {
+      assert.ok(existsSync(join(installedPackageDirectory, "docs", "licenses", filename)), `missing bundled license: ${filename}`);
+    }
     const installedBinary = join(consumerDirectory, "node_modules", ".bin", process.platform === "win32" ? "agentarium.cmd" : "agentarium");
     assert.ok(existsSync(installedLauncher), "packed launcher source is installed");
     assert.ok(existsSync(installedBinary), "npm installed the agentarium binary link");
@@ -398,8 +411,32 @@ async function main() {
     await stopLauncher(launcher);
     launcher = null;
     assert.deepEqual(relativeTree(emptyHomeDirectory), emptyHomeBefore, "Codex startup must not create files under HOME");
+
+    launcherProcessGroup = true;
+    launcher = spawn(NPM_COMMAND, ["exec", "--yes", "--ignore-scripts", "--package", tarballPath,
+      "--", "agentarium", "--port", "0", "--no-open"], {
+      cwd: execDirectory,
+      env: { ...process.env, ...npmEnvOverrides, AGENTARIUM_PROVIDER: "codex" },
+      shell: false,
+      detached: process.platform !== "win32",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const execStartup = await waitForStartup(launcher);
+    const execHealth = await jsonResponse(`${execStartup.url}/api/health`);
+    assert.equal(execHealth.response.status, 200);
+    assert.equal(execHealth.body.readOnly, true);
+    assert.equal(execHealth.body.configured, false, "default npx launch must not select the ambient live provider");
+    const execDemo = await jsonResponse(`${execStartup.url}/api/snapshot?mode=demo`);
+    assert.equal(execDemo.response.status, 200);
+    assert.equal(execDemo.body.mode, "demo");
+    assert.ok(execDemo.body.agents.length > 0);
+    assert.equal((await fetchWithTimeout(execStartup.url)).status, 200);
+    await stopLauncher(launcher, launcherProcessGroup);
+    launcher = null;
+    launcherProcessGroup = false;
+    assert.deepEqual(relativeTree(execDirectory), [], "npx must not create a project in the caller's directory");
   } finally {
-    await stopLauncher(launcher).catch((error) => {
+    await stopLauncher(launcher, launcherProcessGroup).catch((error) => {
       console.error(`launcher cleanup warning: ${error.message}`);
     });
     rmSync(tempRoot, { recursive: true, force: true });

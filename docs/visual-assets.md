@@ -8,7 +8,7 @@ The running world uses `public/assets/sculpted/reference-world.webp` (1536 x 102
 
 The earlier individual `workshop.webp`, `observatory.webp`, `garden.webp`, and `village.webp` scenes remain as prior artwork. They no longer define runtime island geometry. Keep provenance sidecars with their assets. A generation prompt is not a license statement.
 
-The README screenshot and launch film show fictional Demo data. Captures have tool padding removed and reduced-resolution content. The film is an edited walkthrough with an original score. Working captures and editing intermediates are excluded from the source release.
+The README screenshot and launch film show fictional Demo data. Captures have tool padding removed and reduced-resolution content. The film is an edited walkthrough with an original score. The repository includes the Demo captures and film renderer used to reproduce the walkthrough. Editing intermediates are excluded from the source release.
 
 ## Retained legacy assets
 

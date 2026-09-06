@@ -12,22 +12,22 @@ export const SOURCE_CONNECTION_OPTIONS: readonly SourceConnectionOption[] = [
   {
     id: "codex",
     label: "Codex",
-    description: "Reads the tested local Codex state. Run this from your built Agentarium checkout. Requires Node.js 24 or newer.",
-    command: "npm run agentarium -- --provider codex",
+    description: "Reads the tested local Codex state. Requires Node.js 24 or newer.",
+    command: "npx --yes agentarium-map@latest --provider codex",
   },
   {
     id: "json",
     label: "Any harness · JSON",
     description: "For any harness that writes one complete WorldSnapshot JSON file. Replace the example path with the file your bridge writes.",
-    command: "npm run agentarium -- --provider json --snapshot /absolute/path/world.json",
-    validationCommand: "npm run agentarium -- --validate /absolute/path/world.json",
+    command: "npx --yes agentarium-map@latest --provider json --snapshot /absolute/path/world.json",
+    validationCommand: "npx --yes agentarium-map@latest --validate /absolute/path/world.json",
   },
   {
     id: "jsonl",
     label: "Any harness · JSONL",
     description: "For any harness that appends one complete WorldSnapshot per line. Replace the example path with the file your bridge writes.",
-    command: "npm run agentarium -- --provider jsonl --snapshot /absolute/path/world.jsonl",
-    validationCommand: "npm run agentarium -- --validate /absolute/path/world.jsonl",
+    command: "npx --yes agentarium-map@latest --provider jsonl --snapshot /absolute/path/world.jsonl",
+    validationCommand: "npx --yes agentarium-map@latest --validate /absolute/path/world.jsonl",
   },
 ] as const;
 
@@ -64,7 +64,7 @@ export function SourceSetup({ onClose, options = SOURCE_CONNECTION_OPTIONS, cont
       <div className="connection-guide__intro">
         <p className="eyebrow">LOCAL SOURCE</p>
         <h2 id={titleId}>Connect a local source</h2>
-        <p>From your Agentarium checkout, run <code>npm ci</code> once to install and build. Then run an adapter command and choose <strong>Live</strong>. The source label and agent count confirm the connection. Agentarium only reads normalized local state. It never sends prompts, commands, approvals, or payloads to a harness.</p>
+        <p>Run an adapter command in your terminal, then choose <strong>Live</strong>. The source label and agent count confirm the connection. Agentarium only reads normalized local state. It never sends prompts, commands, approvals, or payloads to a harness.</p>
       </div>
 
       <ol className="connection-guide__steps" aria-label="Connection steps">

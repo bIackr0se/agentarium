@@ -30,6 +30,12 @@ hashed JavaScript, CSS, fonts, health, Live JSON, and Demo JSON before removing
 the temporary install. This is the distribution check; a passing source-tree
 server test alone is not enough.
 
+The same test also uses npm exec with the tarball from an empty directory and
+an isolated cache, with install scripts disabled. It verifies default Demo startup,
+the read-only health endpoint, and that the caller's directory stays empty.
+The published runtime has no external npm dependencies; React and the font are
+already in the built browser assets.
+
 Run the focused matrix with:
 
 ```bash
