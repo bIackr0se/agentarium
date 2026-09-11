@@ -498,7 +498,7 @@ function OverviewScene({ hierarchy, mode, missionWorld, onNavigate }: {
           </aside>
         </header>
         <div className="reference-world" aria-label="Project islands">
-          <img className="reference-world__plate" src="/assets/sculpted/reference-world.webp" width="1536" height="1024" alt="" aria-hidden="true" />
+          <img className="reference-world__plate" src="/assets/sculpted/harbor-world.webp" width="1536" height="1024" alt="" aria-hidden="true" />
           {mapProjects.slice(0, 3).map((project, slot) => <ReferenceProject key={project.project.id} project={project} slot={slot} missionWorld={missionWorld} onNavigate={onNavigate} />)}
         </div>
         {mapProjects.length > 3 ? <section className="reference-more" aria-label="More projects"><h3>More projects</h3><div className="realm-map__islands">

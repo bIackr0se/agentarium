@@ -12,7 +12,7 @@ At 760px and below, the attention action precedes the map and the toolbar wraps.
 
 ## Artwork and motion
 
-`public/assets/sculpted/reference-world.webp` is the shared 1536 by 1024 environment. The overview uses the whole image. `WorldArt.tsx` crops it through SVG view boxes with feathered masks for detail scenes. The raster contains no UI text or robots. `robot.webp` supplies the decorative character.
+`public/assets/sculpted/harbor-world.webp` is the shared 1536 by 1024 environment. The overview uses the whole image. `WorldArt.tsx` crops it through SVG view boxes with feathered masks for detail scenes. Detail crops include room around the landmarks and fade at their outer edges to blend into the page. The raster contains no UI text or robots. `harbor-robot.webp` supplies the decorative character. The harbor palette combines ivory limestone, terracotta, patinated bronze, olive foliage, and turquoise shallows.
 
 `src/lib/island-routes.ts` owns the ground coordinates and crop transforms. Home, bend, and work points follow the visible paved courtyards. Both the image and the robot use the same coordinate plane, so responsive resizing preserves the route. These are authored two-dimensional paths, not general collision detection or free-roaming navigation.
 

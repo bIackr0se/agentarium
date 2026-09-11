@@ -19,7 +19,7 @@ Stop it with `Ctrl-C`. See [Run locally](#run-locally) to connect a live source.
 
 ![Agentarium connected world with synthetic Demo projects](docs/agentarium-demo.png)
 
-[Watch the 36-second demo film](launch/2026-09-redesign/agentarium-launch.mp4).
+[Watch the 36-second launch film](launch/2026-09-redesign/agentarium-launch.mp4), recorded with the original artwork.
 
 The app centers three supervision questions:
 

@@ -5,9 +5,9 @@ export interface IslandRoute { crop: readonly [number, number, number, number]; 
 
 // Coordinates refer to the 1536 × 1024 environment plate. Routes follow its paved courtyards.
 export const ISLAND_ROUTES: readonly IslandRoute[] = [
-  { crop: [140, 148, 560, 350], home: [437, 374], bend: [487, 363], work: [535, 338] },
-  { crop: [850, 55, 570, 425], home: [1105, 340], bend: [1139, 367], work: [1202, 374] },
-  { crop: [385, 390, 875, 515], home: [824, 595], bend: [785, 650], work: [901, 697] },
+  { crop: [108, 116, 624, 414], home: [437, 374], bend: [487, 363], work: [535, 338] },
+  { crop: [818, 23, 634, 489], home: [1105, 340], bend: [1139, 367], work: [1202, 374] },
+  { crop: [353, 358, 939, 579], home: [824, 595], bend: [785, 650], work: [901, 697] },
 ];
 export function islandRoute(variant: number): IslandRoute {
   return ISLAND_ROUTES[Math.abs(Math.trunc(variant)) % ISLAND_ROUTES.length];

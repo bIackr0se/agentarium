@@ -16,12 +16,12 @@ export function IslandArt({ variant = 0, className = '' }: { variant?: number; c
         <path d={masks[Math.abs(Math.trunc(variant)) % 3]} fill="white" filter={`url(#${id}-edge)`} />
       </mask>
     </defs>
-    <image href="/assets/sculpted/reference-world.webp" width="1536" height="1024" mask={`url(#${id})`} />
+    <image href="/assets/sculpted/harbor-world.webp" width="1536" height="1024" mask={`url(#${id})`} />
   </svg>;
 }
 
 export function Robot({ variant = 0, className = '', alt = '' }: { variant?: number; className?: string; alt?: string }) {
   return <span className={`robot pixel-villager ${className}`} style={{ '--robot-variant': variant % 4 } as CSSProperties} aria-hidden={alt ? undefined : true}>
-    <img src="/assets/sculpted/robot.webp" alt={alt} draggable={false} width="256" height="256" />
+    <img src="/assets/sculpted/harbor-robot.webp" alt={alt} draggable={false} width="256" height="256" />
   </span>;
 }
