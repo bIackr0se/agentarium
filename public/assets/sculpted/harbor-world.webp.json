@@ -1,0 +1,19 @@
+{
+  "asset": "harbor-world.webp",
+  "date": "2026-09-11",
+  "source": "OpenAI built-in image_gen edit",
+  "references": [
+    "reference-world.webp"
+  ],
+  "prompt": "Preserve the original island silhouettes, main buildings, bridges, courtyards, camera and 3:2 framing. Upgrade limestone, ivory plaster, terracotta, patinated bronze, olive trees and shallow turquoise water, with warm light. Keep clear courtyard paths and empty upper-left space. No characters, text or UI.",
+  "dimensions": [
+    1536,
+    1024
+  ],
+  "encoding": {
+    "format": "WebP",
+    "quality": 88,
+    "alpha": false
+  },
+  "sha256": "50b7895afe7c4b157e3c0c0cceee44912d492c2bc77da60c075f69c626913771"
+}

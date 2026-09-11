@@ -1,6 +1,6 @@
 {
   "name": "agentarium-map",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A localhost-only, read-only visual map for provider-neutral agent work.",
   "bin": {
     "agentarium": "./bin/agentarium.mjs"

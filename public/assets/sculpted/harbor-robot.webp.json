@@ -1,0 +1,20 @@
+{
+  "asset": "harbor-robot.webp",
+  "date": "2026-09-11",
+  "source": "OpenAI built-in image_gen edit",
+  "references": [
+    "robot.webp",
+    "harbor-world.webp"
+  ],
+  "prompt": "Preserve the existing ivory-and-brass robot identity, proportions, two teal eyes and three-quarter standing pose. Refine materials and warm lighting to match the harbor. One complete character on actual transparent background; no scenery, text or additional objects.",
+  "dimensions": [
+    384,
+    384
+  ],
+  "encoding": {
+    "format": "WebP",
+    "quality": 90,
+    "alpha": true
+  },
+  "sha256": "3ea279f97a2166159684ab14c88e407f881d7e3f2b05c59a9ba7e09685875f8c"
+}
