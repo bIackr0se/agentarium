@@ -16,11 +16,6 @@ function providerName(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
-function envValue(options, key) {
-  const env = options.env && typeof options.env === "object" ? options.env : process.env;
-  return typeof env[key] === "string" ? env[key].trim() : "";
-}
-
 function inferProvider(options, env) {
   const explicit = providerName(options.provider);
   if (explicit) return { requested: explicit, source: "options" };
