@@ -48,6 +48,7 @@ export class SnapshotFileSource {
     this.lastError = null;
     this.skippedRecords = 0;
     this.readCount = 0;
+    this.recordCache = new Map();
   }
 
   _unavailable(nowMs, warning = "Configured snapshot source is unavailable.") {
@@ -80,19 +81,36 @@ export class SnapshotFileSource {
       if (lines.length > MAX_JSONL_LINES) throw new Error("snapshot source has too many records");
       let lastValid = null;
       let skippedRecords = 0;
+      // Keep only records present in this bounded read. Exact line keys also
+      // handle append, partial-line completion, rotation, and same-size edits
+      // without trusting filesystem timestamps or retaining removed history.
+      const nextCache = new Map();
       for (const line of lines) {
         if (!line.trim()) continue;
-        try {
-          const parsed = JSON.parse(line);
-          lastValid = normalizeSnapshot(parsed, { nowMs });
-        } catch {
-          // JSONL is append-oriented. A truncated or malformed newest line
-          // must not hide the last complete, valid snapshot.
-          skippedRecords += 1;
+        let parsed;
+        if (nextCache.has(line)) {
+          parsed = nextCache.get(line);
+        } else if (this.recordCache.has(line)) {
+          parsed = this.recordCache.get(line);
+        } else {
+          try {
+            parsed = JSON.parse(line);
+            normalizeSnapshot(parsed, { nowMs });
+          } catch {
+            // Cache invalid records too, preserving the skipped-record count
+            // without repeating contract projection on every refresh.
+            parsed = null;
+          }
         }
+        nextCache.set(line, parsed);
+        if (parsed === null) skippedRecords += 1;
+        else lastValid = parsed;
       }
+      this.recordCache = nextCache;
       if (!lastValid) throw new Error("snapshot source contains no valid snapshot");
-      return { snapshot: lastValid, skippedRecords };
+      // Re-project only the selected raw record: fallback timestamps must use
+      // this refresh's clock, and callers must receive fresh mutable objects.
+      return { snapshot: normalizeSnapshot(lastValid, { nowMs }), skippedRecords };
     }
     let parsed;
     try {
@@ -107,6 +125,8 @@ export class SnapshotFileSource {
     const nowMs = finiteNow(options);
     if (!this.snapshotPath) return this._unavailable(nowMs, "Snapshot source was not configured.");
     try {
+      // An invalid clock must throw before _parse replaces the record cache.
+      const readAt = new Date(nowMs).toISOString();
       const parsed = this._parse(this._readText(), nowMs);
       let snapshot = parsed.snapshot;
       this.skippedRecords = parsed.skippedRecords;
@@ -118,7 +138,7 @@ export class SnapshotFileSource {
         };
         assertPrivacySafe(snapshot);
       }
-      this.lastReadAt = new Date(nowMs).toISOString();
+      this.lastReadAt = readAt;
       this.lastError = null;
       this.readCount += 1;
       return snapshot;
@@ -159,6 +179,7 @@ export class SnapshotFileSource {
 
   close() {
     this.closed = true;
+    this.recordCache.clear();
   }
 }
 

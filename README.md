@@ -388,6 +388,11 @@ optional local database adapter ─┴─> data-source -> allowlist projection -
                   Mission Board, inspector, and evidence replay
 ```
 
+The JSONL adapter reuses contract validation for unchanged record text and
+normalizes the newest valid record on each read. Its cache holds only records
+in the current bounded file. Appends, replacements, and truncation keep the same
+fallback and warning counts; fallback timestamps use the current refresh time.
+
 The hierarchy is pure over the normalized snapshot. Every visible agent belongs
 to one project and one root-task group, including children whose parent is
 outside the bounded snapshot. The partition and missing-parent cases are
