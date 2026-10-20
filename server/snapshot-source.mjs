@@ -48,6 +48,7 @@ export class SnapshotFileSource {
     this.lastError = null;
     this.skippedRecords = 0;
     this.readCount = 0;
+    this.recordValidity = new Map();
   }
 
   _unavailable(nowMs, warning = "Configured snapshot source is unavailable.") {
@@ -78,21 +79,33 @@ export class SnapshotFileSource {
       const lines = text.split(/\r?\n/);
       if (lines.at(-1)?.trim() === "") lines.pop();
       if (lines.length > MAX_JSONL_LINES) throw new Error("snapshot source has too many records");
-      let lastValid = null;
+      let lastValidLine = null;
       let skippedRecords = 0;
+      // Validity per exact line text, kept only for lines in this bounded read:
+      // appends, edits and rotation need no filesystem timestamps, and removed
+      // history leaves the cache.
+      const nextValidity = new Map();
       for (const line of lines) {
         if (!line.trim()) continue;
-        try {
-          const parsed = JSON.parse(line);
-          lastValid = normalizeSnapshot(parsed, { nowMs });
-        } catch {
-          // JSONL is append-oriented. A truncated or malformed newest line
-          // must not hide the last complete, valid snapshot.
-          skippedRecords += 1;
+        let valid = nextValidity.get(line) ?? this.recordValidity.get(line);
+        if (valid === undefined) {
+          try {
+            // A fixed clock keeps the cached verdict independent of refresh time.
+            normalizeSnapshot(JSON.parse(line), { nowMs: 0 });
+            valid = true;
+          } catch {
+            // JSONL is append-oriented. A truncated or malformed newest line
+            // must not hide the last complete, valid snapshot.
+            valid = false;
+          }
         }
+        nextValidity.set(line, valid);
+        if (valid) lastValidLine = line;
+        else skippedRecords += 1;
       }
-      if (!lastValid) throw new Error("snapshot source contains no valid snapshot");
-      return { snapshot: lastValid, skippedRecords };
+      this.recordValidity = nextValidity;
+      if (lastValidLine === null) throw new Error("snapshot source contains no valid snapshot");
+      return { snapshot: normalizeSnapshot(JSON.parse(lastValidLine), { nowMs }), skippedRecords };
     }
     let parsed;
     try {
@@ -159,6 +172,7 @@ export class SnapshotFileSource {
 
   close() {
     this.closed = true;
+    this.recordValidity.clear();
   }
 }
 

@@ -388,6 +388,9 @@ optional local database adapter ─┴─> data-source -> allowlist projection -
                   Mission Board, inspector, and evidence replay
 ```
 
+A JSONL refresh validates only records it has not seen before, so its cost
+follows the changed records, not the size of the bounded history.
+
 The hierarchy is pure over the normalized snapshot. Every visible agent belongs
 to one project and one root-task group, including children whose parent is
 outside the bounded snapshot. The partition and missing-parent cases are
