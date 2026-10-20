@@ -40,8 +40,8 @@ test("bounded JSONL history refresh fits the minimum API refresh interval", asyn
   const cpuBefore = process.cpuUsage();
   loop.enable();
   try {
-    // Same 15 direct reads and bounded input as the scan report. Yield between
-    // reads so the event-loop monitor can observe synchronous stalls.
+    // 15 direct reads of a full bounded history, as in the scan report. Yield
+    // between reads so the event-loop monitor can observe synchronous stalls.
     for (let index = 0; index < 15; index += 1) {
       await delay(10);
       const start = performance.now();
@@ -63,6 +63,9 @@ test("bounded JSONL history refresh fits the minimum API refresh interval", asyn
   // api.mjs permits a 250 ms refresh interval. A median exceeding that
   // interval means ordinary refreshes cannot keep up with the supported rate.
   assert.ok(medianMs < 250, `median refresh ${medianMs.toFixed(3)} ms exceeds the 250 ms refresh interval`);
+  // Without reuse every read costs about as much as the first (measured 533 ms
+  // warm against 394 ms cold); with reuse a warm read skips validation.
+  assert.ok(medianMs < times[0] / 4, `warm median ${medianMs.toFixed(3)} ms is not well below the cold read ${times[0].toFixed(3)} ms`);
   assert.equal(source.diagnostics().skippedRecords, 0);
 });
 
@@ -132,7 +135,7 @@ test("JSONL history parses only new record text and returns independent projecti
   assert.equal(source.recordValidity.size, 0);
 });
 
-test("JSONL validation cache recovers after an invalid refresh clock", (t) => {
+test("JSONL source recovers after an invalid refresh clock", (t) => {
   const source = createSnapshotSource({ snapshotPath: history(t, line), format: "jsonl" });
   t.after(() => source.close());
   assert.throws(() => source.getSnapshot({ nowMs: Number.MAX_VALUE }), RangeError);
