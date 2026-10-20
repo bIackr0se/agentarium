@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { EventEmitter } from "node:events";
+import { EventEmitter, once } from "node:events";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -17,9 +17,14 @@ const record = {
   projects: [], agents: [], privacy: { rawContentExposed: false },
 };
 const line = `${JSON.stringify(record)}\n`;
-const records = Math.floor(MAX_SNAPSHOT_BYTES / Buffer.byteLength(line));
+// Distinct records, as in a real history: identical lines would let a cache
+// keyed by line text validate the whole file once.
+const recordAt = (index) => ({ ...record, sourceLabel: `Record ${String(index).padStart(5, "0")}` });
+const recordLine = (index) => `${JSON.stringify(recordAt(index))}\n`;
+const records = Math.floor(MAX_SNAPSHOT_BYTES / Buffer.byteLength(recordLine(0)));
+const distinctHistory = Array.from({ length: records }, (_, index) => recordLine(index)).join("");
 
-function history(t, text = line.repeat(records)) {
+function history(t, text = distinctHistory) {
   const directory = mkdtempSync(join(tmpdir(), "agentarium-jsonl-refresh-"));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
   const path = join(directory, "history.jsonl");
@@ -42,7 +47,7 @@ test("bounded JSONL history refresh fits the minimum API refresh interval", asyn
       const start = performance.now();
       const actual = source.getSnapshot({ nowMs: NOW + index * 1000 });
       times.push(performance.now() - start);
-      assert.deepEqual(actual, normalizeSnapshot(record, { nowMs: NOW + index * 1000 }));
+      assert.deepEqual(actual, normalizeSnapshot(recordAt(records - 1), { nowMs: NOW + index * 1000 }));
     }
     await delay(10);
   } finally {
@@ -51,8 +56,8 @@ test("bounded JSONL history refresh fits the minimum API refresh interval", asyn
   const cpu = process.cpuUsage(cpuBefore);
   const sorted = times.toSorted((a, b) => a - b);
   const medianMs = sorted[Math.floor(sorted.length / 2)];
-  t.diagnostic(JSON.stringify({ bytes: records * Buffer.byteLength(line), records,
-    reads: times.length, medianMs, maxMs: sorted.at(-1),
+  t.diagnostic(JSON.stringify({ bytes: Buffer.byteLength(distinctHistory), records,
+    reads: times.length, coldMs: times[0], medianMs, maxMs: sorted.at(-1),
     meanCpuMs: (cpu.user + cpu.system) / 1000 / times.length,
     eventLoopP95Ms: loop.percentile(95) / 1e6, eventLoopMaxMs: loop.max / 1e6 }));
   // api.mjs permits a 250 ms refresh interval. A median exceeding that
@@ -104,25 +109,27 @@ test("JSONL history parses only new record text and returns independent projecti
   const source = createSnapshotSource({ snapshotPath: path, format: "jsonl" });
   t.after(() => source.close());
   const parse = t.mock.method(JSON, "parse");
+  // Each new line is parsed once for validation, and the selected line once
+  // per read for its projection.
   const initial = source.getSnapshot({ nowMs: NOW });
-  assert.equal(parse.mock.callCount(), 3);
+  assert.equal(parse.mock.callCount(), 4);
   initial.sourceLabel = "Mutated by caller";
   initial.warnings.length = 0;
   const next = source.getSnapshot({ nowMs: NOW + 1000 });
-  assert.equal(parse.mock.callCount(), 3);
+  assert.equal(parse.mock.callCount(), 5);
   assert.equal(next.sourceLabel, "Second fixture");
   assert.equal(next.generatedAt, new Date(NOW + 1000).toISOString());
   assert.equal(next.warnings.length, 2);
   const third = JSON.stringify({ ...record, sourceLabel: "Third fixture" });
   writeFileSync(path, `${first}\n${second}\nnot-json\n${third}\n`);
   assert.equal(source.getSnapshot({ nowMs: NOW }).sourceLabel, "Third fixture");
-  assert.equal(parse.mock.callCount(), 4);
+  assert.equal(parse.mock.callCount(), 7);
   writeFileSync(path, `${first}\n`);
   assert.equal(source.getSnapshot({ nowMs: NOW }).sourceLabel, "First fixture");
-  assert.equal(source.recordCache.size, 1, "removed history must leave the cache");
-  assert.equal(parse.mock.callCount(), 4);
+  assert.equal(source.recordValidity.size, 1, "removed history must leave the cache");
+  assert.equal(parse.mock.callCount(), 8);
   source.close();
-  assert.equal(source.recordCache.size, 0);
+  assert.equal(source.recordValidity.size, 0);
 });
 
 test("JSONL validation cache recovers after an invalid refresh clock", (t) => {
@@ -134,7 +141,7 @@ test("JSONL validation cache recovers after an invalid refresh clock", (t) => {
   assert.equal(source.diagnostics().ready, true);
 });
 
-test("JSONL API and SSE handlers refresh without revalidating history", (t) => {
+test("JSONL API and SSE handlers serve the refreshed record", (t) => {
   const path = history(t);
   const handler = createApiHandler({ provider: "jsonl", snapshotPath: path, env: {}, snapshotRefreshMs: 250 });
   t.after(() => handler.close());
@@ -168,17 +175,14 @@ test("JSONL API and SSE handlers refresh without revalidating history", (t) => {
 test("JSONL snapshot and SSE refresh expose the latest normalized record", { timeout: 20_000 }, async (t) => {
   const path = history(t);
   const server = createApiServer({ provider: "jsonl", snapshotPath: path, env: {}, snapshotRefreshMs: 250, intervalMs: 250 });
-  t.after(() => server.close());
-  await new Promise((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
+  t.after(() => {
+    server.closeAllConnections?.();
+    server.close();
   });
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
   const base = `http://127.0.0.1:${server.address().port}`;
-  const loop = monitorEventLoopDelay({ resolution: 1 });
-  const cpuBefore = process.cpuUsage();
-  const start = performance.now();
-  loop.enable();
-  try {
+  {
     const snapshot = await fetch(`${base}/api/snapshot`);
     assert.equal(snapshot.status, 200);
     assert.equal((await snapshot.json()).schemaVersion, 1);
@@ -205,20 +209,16 @@ test("JSONL snapshot and SSE refresh expose the latest normalized record", { tim
       assert.equal((await nextSnapshot()).schemaVersion, 1);
       writeFileSync(path, line.repeat(records - 2) + `${JSON.stringify({ ...record, sourceLabel: "Appended fixture" })}\n`);
       assert.equal((await nextSnapshot()).sourceLabel, "Appended fixture");
-      await delay(5200);
-      const health = await fetch(`${base}/api/health`).then((response) => response.json());
+      // The 250 ms refresh keeps reading the source after the SSE update.
+      let health;
+      for (const deadline = Date.now() + 5000; Date.now() < deadline; await delay(50)) {
+        health = await fetch(`${base}/api/health`).then((response) => response.json());
+        if (health.recordsRead > 2) break;
+      }
       assert.equal(health.ready, true);
       assert.ok(health.recordsRead > 2);
-      t.diagnostic(JSON.stringify({ refreshMs: 250, sourceReads: health.recordsRead }));
     } finally {
       await reader.cancel();
     }
-  } finally {
-    loop.disable();
-    const cpu = process.cpuUsage(cpuBefore);
-    const wallMs = performance.now() - start;
-    const cpuMs = (cpu.user + cpu.system) / 1000;
-    t.diagnostic(JSON.stringify({ wallMs, cpuMs, cpuCoreFraction: cpuMs / wallMs,
-      eventLoopP95Ms: loop.percentile(95) / 1e6, eventLoopMaxMs: loop.max / 1e6 }));
   }
 });

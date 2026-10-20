@@ -48,7 +48,7 @@ export class SnapshotFileSource {
     this.lastError = null;
     this.skippedRecords = 0;
     this.readCount = 0;
-    this.recordCache = new Map();
+    this.recordValidity = new Map();
   }
 
   _unavailable(nowMs, warning = "Configured snapshot source is unavailable.") {
@@ -79,38 +79,33 @@ export class SnapshotFileSource {
       const lines = text.split(/\r?\n/);
       if (lines.at(-1)?.trim() === "") lines.pop();
       if (lines.length > MAX_JSONL_LINES) throw new Error("snapshot source has too many records");
-      let lastValid = null;
+      let lastValidLine = null;
       let skippedRecords = 0;
-      // Keep only records present in this bounded read. Exact line keys also
-      // handle append, partial-line completion, rotation, and same-size edits
-      // without trusting filesystem timestamps or retaining removed history.
-      const nextCache = new Map();
+      // Validity per exact line text, kept only for lines in this bounded read:
+      // appends, edits and rotation need no filesystem timestamps, and removed
+      // history leaves the cache.
+      const nextValidity = new Map();
       for (const line of lines) {
         if (!line.trim()) continue;
-        let parsed;
-        if (nextCache.has(line)) {
-          parsed = nextCache.get(line);
-        } else if (this.recordCache.has(line)) {
-          parsed = this.recordCache.get(line);
-        } else {
+        let valid = nextValidity.get(line) ?? this.recordValidity.get(line);
+        if (valid === undefined) {
           try {
-            parsed = JSON.parse(line);
-            normalizeSnapshot(parsed, { nowMs });
+            // A fixed clock keeps the cached verdict independent of refresh time.
+            normalizeSnapshot(JSON.parse(line), { nowMs: 0 });
+            valid = true;
           } catch {
-            // Cache invalid records too, preserving the skipped-record count
-            // without repeating contract projection on every refresh.
-            parsed = null;
+            // JSONL is append-oriented. A truncated or malformed newest line
+            // must not hide the last complete, valid snapshot.
+            valid = false;
           }
         }
-        nextCache.set(line, parsed);
-        if (parsed === null) skippedRecords += 1;
-        else lastValid = parsed;
+        nextValidity.set(line, valid);
+        if (valid) lastValidLine = line;
+        else skippedRecords += 1;
       }
-      this.recordCache = nextCache;
-      if (!lastValid) throw new Error("snapshot source contains no valid snapshot");
-      // Re-project only the selected raw record: fallback timestamps must use
-      // this refresh's clock, and callers must receive fresh mutable objects.
-      return { snapshot: normalizeSnapshot(lastValid, { nowMs }), skippedRecords };
+      this.recordValidity = nextValidity;
+      if (lastValidLine === null) throw new Error("snapshot source contains no valid snapshot");
+      return { snapshot: normalizeSnapshot(JSON.parse(lastValidLine), { nowMs }), skippedRecords };
     }
     let parsed;
     try {
@@ -125,8 +120,6 @@ export class SnapshotFileSource {
     const nowMs = finiteNow(options);
     if (!this.snapshotPath) return this._unavailable(nowMs, "Snapshot source was not configured.");
     try {
-      // An invalid clock must throw before _parse replaces the record cache.
-      const readAt = new Date(nowMs).toISOString();
       const parsed = this._parse(this._readText(), nowMs);
       let snapshot = parsed.snapshot;
       this.skippedRecords = parsed.skippedRecords;
@@ -138,7 +131,7 @@ export class SnapshotFileSource {
         };
         assertPrivacySafe(snapshot);
       }
-      this.lastReadAt = readAt;
+      this.lastReadAt = new Date(nowMs).toISOString();
       this.lastError = null;
       this.readCount += 1;
       return snapshot;
@@ -179,7 +172,7 @@ export class SnapshotFileSource {
 
   close() {
     this.closed = true;
-    this.recordCache.clear();
+    this.recordValidity.clear();
   }
 }
 
